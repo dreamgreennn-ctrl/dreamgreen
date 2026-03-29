@@ -1,9 +1,9 @@
 import * as THREE from 'three';
-import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 /**
  * Dream Green Hero 3D Background
- * Renders the PlantOrchid001 FBX model in the background
+ * Renders the PlantOrchid001 GLB model in the background
  */
 
 const container = document.getElementById('hero-3d-container');
@@ -21,6 +21,7 @@ function init() {
   // 1. Scene & Camera
   scene = new THREE.Scene();
   
+  // CRITICAL: Use clientWidth to ignore scrollbar width for perfect layout alignment 
   const width = document.documentElement.clientWidth;
   const height = container.clientHeight || 520;
   
@@ -56,16 +57,16 @@ function init() {
   spotLight.position.set(0, -10, 5);
   scene.add(spotLight);
 
-  // 4. Load Textures
+  // Still load primary textures as fallback/enhancement if GLB isn't fully self-contained
   const textureLoader = new THREE.TextureLoader();
   const colorMap = textureLoader.load('PlantOrchid001/PlantOrchid001_COL_2K_METALNESS.jpg');
   const normalMap = textureLoader.load('PlantOrchid001/PlantOrchid001_NRM_2K_METALNESS.jpg');
   const roughnessMap = textureLoader.load('PlantOrchid001/PlantOrchid001_ROUGHNESS_2K_METALNESS.jpg');
 
-  // 5. Load Model
-  const fbxLoader = new FBXLoader();
-  fbxLoader.load('PlantOrchid001/PlantOrchid001.fbx', (object) => {
-    model = object;
+  // 5. Load GLB Model
+  const gltfLoader = new GLTFLoader();
+  gltfLoader.load('PlantOrchid001/PlantOrchid001-compressed.glb', (gltf) => {
+    model = gltf.scene;
     
     // SCALE: Adjusted for safety within larger parent container
     model.scale.set(0.35, 0.35, 0.35); 
@@ -73,6 +74,7 @@ function init() {
     
     model.traverse((child) => {
       if (child.isMesh) {
+        // Enforce high-end materials
         child.material = new THREE.MeshStandardMaterial({
           map: colorMap,
           normalMap: normalMap,
@@ -103,7 +105,7 @@ function init() {
       container.style.opacity = '1';
     });
   }, undefined, (error) => {
-    console.error('FBX Load Error:', error);
+    console.error('GLB Load Error:', error);
   });
 
   // 7. Fallback Timeout for Preloader (5 seconds)
