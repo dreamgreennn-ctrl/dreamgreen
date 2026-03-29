@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product — Dream Green | Surat, Gujarat</title>
+  <meta name="description" content="Premium plant gift with beautiful packaging. Same-day delivery across Surat, Gujarat.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=20260328">
+</head>
+<body>
+  <div id="nav-slot"></div>
+
+  <section class="product-detail section" style="padding-top:calc(var(--nav-height) + 2rem);">
+    <div class="container">
+      <div class="page-header__breadcrumb" id="breadcrumb" style="margin-bottom:1.5rem;">
+        <a href="index.html">Home</a> <span>/</span> <a href="shop.html">Shop</a> <span>/</span> <span id="breadcrumbName">Product</span>
+      </div>
+      <div class="product-detail__layout" id="productContent">
+        <!-- Dynamically rendered -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Related Products -->
+  <section class="bestsellers section" id="relatedSection" style="display:none;">
+    <div class="container">
+      <h2 class="section-title reveal">You Might Also Love</h2>
+      <div class="bestsellers__track" id="relatedTrack" style="margin-top:2rem;"></div>
+    </div>
+  </section>
+
+  <div id="footer-slot"></div>
+
+  <!-- Firebase SDKs (Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+  <!-- Scripts -->
+  <script src="js/firebase-config.js?v=20260328"></script>
+  <script src="js/data.js?v=20260328"></script>
+  <script src="js/cart.js?v=20260328"></script>
+  <script src="js/config.js?v=20260328"></script>
+  <script src="js/components.js?v=20260328"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Initialize Data from Firebase first
+      DreamGreenData.init(function() {
+        DreamGreenComponents.initPage({
+          onReady: function () {
+            var params = new URLSearchParams(window.location.search);
+            var productIdSource = params.get('id');
+            
+            // Nuclear Fallback: Check session storage if URL param is missing
+            if (!productIdSource) {
+              try {
+                productIdSource = sessionStorage.getItem('last_viewed_product_id');
+              } catch(e) {}
+            }
+
+            var product = DreamGreenData.getProduct(productIdSource);
+
+            if (!product) {
+              console.error('Product not found for ID:', productIdSource);
+              document.getElementById('productContent').innerHTML = 
+                '<div class="shop__empty"><h2>Product not found</h2>' + 
+                '<p>Sorry, we couldn\'t find that product (ID: ' + (productIdSource || 'None') + ').</p>' +
+                '<p>Full URL: ' + window.location.href + '</p>' +
+                '<p>Available products: ' + DreamGreenData.products.length + '</p>' +
+                '<a href="shop.html" class="btn btn--primary">Browse All Plants</a></div>';
+              return;
+            }
+
+            document.title = product.name + ' — Dream Green | Surat, Gujarat';
+            document.getElementById('breadcrumbName').textContent = product.name;
+
+            var savings = product.originalPrice ? product.originalPrice - product.price : 0;
+
+            document.getElementById('productContent').innerHTML =
+              '<div class="product-detail__image reveal-left">' +
+                '<div class="product-detail__image-main">' +
+                  '<img src="' + product.image + '" alt="' + product.name + '" width="500" height="500">' +
+                  (product.tag ? '<div class="product-detail__badge">' + product.tag + '</div>' : '') +
+                '</div>' +
+              '</div>' +
+              '<div class="product-detail__info reveal-right">' +
+                '<h1 class="product-detail__name">' + product.name + '</h1>' +
+                '<div class="product-detail__rating">' +
+                  DreamGreenComponents.renderStars(product.rating) +
+                  ' <span>(' + product.reviews + ' reviews)</span>' +
+                '</div>' +
+                '<div class="product-detail__price-row">' +
+                  '<span class="product-detail__price">' + DreamGreenComponents.formatPrice(product.price) + '</span>' +
+                  (product.originalPrice ? '<span class="product-detail__original-price">' + DreamGreenComponents.formatPrice(product.originalPrice) + '</span>' : '') +
+                  (savings > 0 ? '<span class="product-detail__savings">Save ' + DreamGreenComponents.formatPrice(savings) + '</span>' : '') +
+                '</div>' +
+                '<p class="product-detail__desc">' + product.description + '</p>' +
+                '<div class="product-detail__meta">' +
+                  '<div class="product-detail__meta-item"><strong>Size:</strong> ' + product.size + '</div>' +
+                  '<div class="product-detail__meta-item"><strong>Pot:</strong> ' + product.potType + '</div>' +
+                  '<div class="product-detail__meta-item"><strong>Delivery:</strong> Same-day in Surat, Gujarat</div>' +
+                '</div>' +
+                '<div class="product-detail__qty-row">' +
+                  '<div class="qty-selector">' +
+                    '<button class="qty-btn" id="qtyMinus">−</button>' +
+                    '<input type="number" class="qty-input" id="qtyInput" value="1" min="1" max="10">' +
+                    '<button class="qty-btn" id="qtyPlus">+</button>' +
+                  '</div>' +
+                  '<button class="btn btn--primary product-detail__add-btn" id="addToCartBtn">🌿 Add to Gift — ' + DreamGreenComponents.formatPrice(product.price) + '</button>' +
+                '</div>' +
+                '<div class="product-detail__trust">' +
+                  '<div>🎁 Gift-wrapped in our signature box</div>' +
+                  '<div>🚚 Same-day delivery in Surat</div>' +
+                  '<div>💚 100% live plant guarantee</div>' +
+                  '<div>💌 Free personalized message card</div>' +
+                '</div>' +
+                '<div class="product-detail__care">' +
+                  '<h3>Plant Care</h3>' +
+                  '<div class="product-detail__care-item"><strong>☀️ Light:</strong> ' + product.careInfo.light + '</div>' +
+                  '<div class="product-detail__care-item"><strong>💧 Water:</strong> ' + product.careInfo.water + '</div>' +
+                  '<div class="product-detail__care-item"><strong>🌡️ Difficulty:</strong> ' + product.careInfo.difficulty + '</div>' +
+                '</div>' +
+                '<div class="product-detail__features">' +
+                  '<h3>What\'s Included</h3>' +
+                  '<ul>' + product.features.map(function (f) { return '<li>✓ ' + f + '</li>'; }).join('') + '</ul>' +
+                '</div>' +
+              '</div>';
+
+            DreamGreenComponents.initScrollReveals();
+
+            // Qty controls
+            var qtyInput = document.getElementById('qtyInput');
+            document.getElementById('qtyMinus').addEventListener('click', function () {
+              var val = parseInt(qtyInput.value);
+              if (val > 1) qtyInput.value = val - 1;
+              updateBtnPrice();
+            });
+            document.getElementById('qtyPlus').addEventListener('click', function () {
+              var val = parseInt(qtyInput.value);
+              if (val < 10) qtyInput.value = val + 1;
+              updateBtnPrice();
+            });
+            qtyInput.addEventListener('change', function () {
+              var val = parseInt(this.value);
+              if (isNaN(val) || val < 1) this.value = 1;
+              if (val > 10) this.value = 10;
+              updateBtnPrice();
+            });
+
+            function updateBtnPrice() {
+              var btn = document.getElementById('addToCartBtn');
+              var total = product.price * parseInt(qtyInput.value);
+              btn.textContent = '🌿 Add to Gift — ' + DreamGreenComponents.formatPrice(total);
+            }
+
+            // Add to cart
+            document.getElementById('addToCartBtn').addEventListener('click', function () {
+              var qty = parseInt(qtyInput.value);
+              DreamGreenCart.addItem(product.id, qty);
+              this.textContent = '✓ Added to Cart!';
+              this.style.backgroundColor = '#6e8e69';
+              var self = this;
+              setTimeout(function () {
+                self.style.backgroundColor = '';
+                updateBtnPrice();
+              }, 2000);
+            });
+
+            // Related products
+            var related = DreamGreenData.products.filter(function (p) { return p.id !== product.id; }).slice(0, 4);
+            if (related.length > 0) {
+              document.getElementById('relatedSection').style.display = '';
+              document.getElementById('relatedTrack').innerHTML = related.map(function (p) {
+                return DreamGreenComponents.renderProductCard(p);
+              }).join('');
+            }
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Account — Dream Green | Surat, Gujarat</title>
+  <meta name="description" content="Manage your plant gift orders and track delivery status.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=20260328">
+</head>
+<body>
+  <div id="nav-slot"></div>
+
+  <section class="account-page section" style="padding-top:calc(var(--nav-height) + 2rem);">
+    <div class="container">
+      <div class="page-header__breadcrumb" style="margin-bottom:1.5rem;">
+        <a href="index.html">Home</a> <span>/</span> <span>My Account</span>
+      </div>
+      
+      <div class="account-header reveal">
+        <h1 class="page-header__title">Hello, <span id="userNameDisplay">...</span></h1>
+        <p class="section-subtitle">Manage your plant gifts and tracking info.</p>
+        <button id="logoutBtn" class="btn btn--outline btn--small" style="margin-top:1rem;">Logout</button>
+      </div>
+
+      <div class="account-layout">
+        <!-- Sidebar -->
+        <aside class="account-sidebar reveal-left">
+          <div class="account-nav">
+            <button class="account-nav-item active" data-tab="orders">My Orders</button>
+            <button class="account-nav-item" data-tab="profile">Profile Details</button>
+          </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="account-content reveal-right">
+          <div id="ordersTab" class="account-tab">
+            <h2 class="account-tab__title">Order History</h2>
+            <div id="orderList" class="order-list">
+              <div class="loading-spinner">🪴 Loading your orders...</div>
+            </div>
+          </div>
+
+          <div id="profileTab" class="account-tab" style="display:none;">
+            <h2 class="account-tab__title">Your Profile</h2>
+            <div class="profile-details">
+              <p><strong>Name:</strong> <span id="profileName">...</span></p>
+              <p><strong>Email:</strong> <span id="profileEmail">...</span></p>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-slot"></div>
+
+  <!-- Firebase SDKs (Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+  <!-- Scripts -->
+  <script src="js/firebase-config.js?v=20260328"></script>
+  <script src="js/data.js?v=20260328"></script>
+  <script src="js/config.js?v=20260328"></script>
+  <script src="js/components.js?v=20260328"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Prioritize Auth and Orders fetch
+      auth.onAuthStateChanged(function (user) {
+        if (user) {
+          document.getElementById('userNameDisplay').textContent = user.displayName || user.email.split('@')[0];
+          document.getElementById('profileName').textContent = user.displayName || 'Not set';
+          document.getElementById('profileEmail').textContent = user.email;
+          fetchOrders(user.uid);
+        } else {
+          window.location.href = 'login.html?redirect=account.html';
+        }
+      });
+
+      // Initialize other components
+      DreamGreenData.init(function() {
+        DreamGreenComponents.initPage({
+          onReady: function () {
+            // Page fully ready
+          }
+        });
+      });
+
+      document.getElementById('logoutBtn').addEventListener('click', function () {
+        auth.signOut();
+      });
+
+      // Tab switching
+      document.querySelectorAll('.account-nav-item').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var tab = btn.getAttribute('data-tab');
+          document.querySelectorAll('.account-nav-item').forEach(i => i.classList.remove('active'));
+          btn.classList.add('active');
+          
+          document.querySelectorAll('.account-tab').forEach(t => t.style.display = 'none');
+          document.getElementById(tab + 'Tab').style.display = 'block';
+        });
+      });
+
+      async function fetchOrders(uid) {
+        var orderList = document.getElementById('orderList');
+        var userEmail = auth.currentUser ? auth.currentUser.email : null;
+        
+        orderList.innerHTML = '<div class="loading-spinner">🔍 Searching for your orders (ID: ' + uid.slice(0,5) + '...)...</div>';
+        
+        try {
+          console.log("Fetching orders for UID:", uid);
+          // Attempt 1: Fetch by UID
+          let snapshot = await db.collection('orders')
+            .where('uid', '==', uid)
+            .get();
+
+          let orders = [];
+          snapshot.forEach(doc => orders.push(Object.assign({ firebaseId: doc.id }, doc.data())));
+          console.log("Orders found by UID:", orders.length);
+
+          // Attempt 2: Fallback to Email (for orders placed as guest with the same email)
+          if (orders.length === 0 && userEmail) {
+            orderList.innerHTML = '<div class="loading-spinner">📧 Checking guest orders for ' + userEmail + '...</div>';
+            let emailSnapshot = await db.collection('orders')
+              .where('senderEmail', '==', userEmail)
+              .get();
+            
+            emailSnapshot.forEach(doc => {
+              const data = doc.data();
+              if (data.uid === 'guest') {
+                orders.push(Object.assign({ firebaseId: doc.id }, data));
+              }
+            });
+            console.log("Total orders found after email fallback:", orders.length);
+          }
+
+          if (orders.length === 0) {
+            orderList.innerHTML = 
+              '<div class="empty-state">' +
+                '<h3>No orders found yet</h3>' +
+                '<p>We couldn\'t find any orders linked to this account (' + userEmail + ').</p>' +
+                '<p style="font-size:0.85rem; margin-top:0.5rem; color:var(--charcoal-light);">Tip: Did you use a different email during checkout?</p>' +
+                '<a href="shop.html" class="btn btn--primary" style="margin-top:1.5rem;">Send your first Gift</a>' +
+              '</div>';
+            return;
+          }
+
+          // Sort by date locally
+          orders.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
+          orderList.innerHTML = '';
+          orders.forEach(order => {
+            const orderId = order.firebaseId;
+            const date = order.createdAt ? new Date(order.createdAt.seconds * 1000).toLocaleDateString() : 'Recent';
+            const status = order.status || 'Pending';
+            const statusClass = status.toLowerCase().replace(/\s+/g, '-');
+
+            const orderCard = document.createElement('div');
+            orderCard.className = 'order-card'; 
+            orderCard.style.borderLeft = '4px solid var(--sage)';
+            orderCard.innerHTML = `
+              <div class="order-card__header">
+                <div class="order-card__info">
+                  <span class="order-card__date">${date}</span>
+                  <span class="order-card__id">Order #${orderId.slice(-6).toUpperCase()}</span>
+                </div>
+                <div class="order-card__status badge-${statusClass}">${status}</div>
+              </div>
+              <div class="order-card__body">
+                <div class="order-card__items">
+                  ${(order.items || []).map(i => `<span><strong>${i.qty}x</strong> ${i.productName}</span>`).join('')}
+                </div>
+                <div class="order-card__total">Total Paid: ₹${order.total}</div>
+              </div>
+            `;
+            orderList.appendChild(orderCard);
+          });
+        } catch (error) {
+          console.error("Order fetch error:", error);
+          orderList.innerHTML = 
+            '<div class="error-box" style="padding:2rem; background:#fff5f5; border:1px solid #ffc9c9; border-radius:12px; color:#c92a2a;">' +
+              '<h4 style="margin-bottom:1rem;">⚠️ Connection Issue</h4>' +
+              '<p>We had trouble connecting to the gift database.</p>' +
+              '<p style="font-size:0.85rem; margin-top:1rem; opacity:0.8;">Details: ' + error.message + '</p>' +
+              '<button onclick="location.reload()" class="btn btn--outline" style="margin-top:1.5rem; font-size:0.8rem;">Try Again</button>' +
+            '</div>';
+        }
+      }
+    });
+  </script>
+</body>
+</html>

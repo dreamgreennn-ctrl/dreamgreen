@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog — Dream Green | Surat, Gujarat</title>
+  <meta name="description" content="Plant care tips, gifting ideas, and green inspiration from the Dream Green journal.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=20260328">
+</head>
+<body>
+  <div id="nav-slot"></div>
+
+  <!-- Blog listing / Blog article -->
+  <section class="section" style="padding-top:calc(var(--nav-height) + 2rem);">
+    <div class="container">
+      <!-- Listing View -->
+      <div id="blogListing">
+        <div class="page-header__breadcrumb" style="margin-bottom:1.5rem;">
+          <a href="index.html">Home</a> <span>/</span> <span>Blog</span>
+        </div>
+        <h1 class="page-header__title reveal">From the Dream Green Journal</h1>
+        <p class="page-header__subtitle reveal" style="margin-bottom:3rem;">Plant care tips, gifting ideas, and green inspiration.</p>
+        <div class="blog-teaser__grid" id="blogGrid"></div>
+      </div>
+
+      <!-- Article View (hidden by default) -->
+      <div id="blogArticle" style="display:none;">
+        <div class="page-header__breadcrumb" style="margin-bottom:1.5rem;">
+          <a href="index.html">Home</a> <span>/</span> <a href="blog.html">Blog</a> <span>/</span> <span id="articleBreadcrumb">Article</span>
+        </div>
+        <article class="blog-article">
+          <div class="blog-article__header reveal">
+            <div class="blog-card__tag" id="articleTag"></div>
+            <h1 class="blog-article__title" id="articleTitle"></h1>
+            <div class="blog-article__meta" id="articleMeta"></div>
+          </div>
+          <div class="blog-article__hero reveal-scale">
+            <img id="articleImage" alt="" loading="lazy" width="800" height="400">
+          </div>
+          <div class="blog-article__body reveal" id="articleBody"></div>
+          <div class="blog-article__cta reveal">
+            <h3>Ready to send a plant gift?</h3>
+            <p>Browse our curated collection and surprise someone special in Surat today.</p>
+            <a href="shop.html" class="btn btn--primary">Shop Plant Gifts →</a>
+          </div>
+          <a href="blog.html" class="blog-article__back">← Back to all articles</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-slot"></div>
+
+  <!-- Firebase SDKs (Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+  <!-- Scripts -->
+  <script src="js/firebase-config.js?v=20260328"></script>
+  <script src="js/data.js?v=20260328"></script>
+  <script src="js/cart.js?v=20260328"></script>
+  <script src="js/config.js?v=20260328"></script>
+  <script src="js/components.js?v=20260328"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Initialize Data from Firebase first
+      DreamGreenData.init(function() {
+        DreamGreenComponents.initPage({
+          onReady: function () {
+            var params = new URLSearchParams(window.location.search);
+            var postSlug = params.get('post');
+
+            if (postSlug) {
+              // Show article view
+              var post = DreamGreenData.getBlogPostBySlug(postSlug);
+              if (!post) {
+                document.getElementById('blogListing').innerHTML = '<div class="shop__empty"><h2>Article not found</h2><a href="blog.html" class="btn btn--primary">View all articles</a></div>';
+                return;
+              }
+
+              document.getElementById('blogListing').style.display = 'none';
+              document.getElementById('blogArticle').style.display = '';
+              document.title = post.title + ' — Dream Green Blog';
+              document.getElementById('articleBreadcrumb').textContent = post.title;
+              document.getElementById('articleTag').textContent = post.tag;
+              document.getElementById('articleTitle').textContent = post.title;
+              document.getElementById('articleMeta').innerHTML = post.date + ' · ' + post.readTime;
+              document.getElementById('articleImage').src = post.image;
+              document.getElementById('articleImage').alt = post.title;
+              document.getElementById('articleBody').innerHTML = post.content;
+
+              DreamGreenComponents.initScrollReveals();
+            } else {
+              // Show listing
+              var grid = document.getElementById('blogGrid');
+              grid.innerHTML = DreamGreenData.blogPosts.map(function (post) {
+                return '<a href="blog.html?post=' + post.slug + '" class="blog-card reveal">' +
+                  '<div class="blog-card__image-wrap"><img src="' + post.image + '" alt="' + post.title + '" loading="lazy" width="400" height="250"></div>' +
+                  '<div class="blog-card__content">' +
+                    '<div class="blog-card__tag">' + post.tag + '</div>' +
+                    '<h3 class="blog-card__title">' + post.title + '</h3>' +
+                    '<p class="blog-card__excerpt">' + post.excerpt + '</p>' +
+                    '<div class="blog-card__meta">' + post.date + ' · ' + post.readTime + '</div>' +
+                    '<span class="blog-card__link">Read More →</span>' +
+                  '</div>' +
+                '</a>';
+              }).join('');
+              DreamGreenComponents.initScrollReveals();
+            }
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

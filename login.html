@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login / Sign Up — Dream Green | Surat, Gujarat</title>
+  <meta name="description" content="Access your Dream Green account to manage your plant gift orders.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=20260328">
+</head>
+<body>
+  <div id="nav-slot"></div>
+
+  <section class="auth-page section" style="padding-top:calc(var(--nav-height) + 4rem); min-height:80vh; display:flex; align-items:center;">
+    <div class="container container--narrow">
+      <div class="auth-card reveal">
+        <div class="auth-card__header text-center">
+          <h1 class="auth-card__title" id="authTitle">Welcome Back</h1>
+          <p class="auth-card__subtitle" id="authSubtitle">Login to your Dream Green account</p>
+        </div>
+
+        <form id="authForm" class="auth-form">
+          <div class="form-group" id="nameGroup" style="display:none;">
+            <label for="regName">Full Name</label>
+            <input type="text" id="regName" placeholder="Your Name">
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" required placeholder="hello@example.com">
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" required placeholder="••••••••">
+          </div>
+          
+          <div id="errorMessage" class="error-message" style="display:none; color:var(--terracotta); font-size:0.85rem; margin-bottom:1rem; text-align:center;"></div>
+
+          <button type="submit" class="btn btn--primary w-100" id="authBtn">Login</button>
+        </form>
+
+        <div class="auth-divider">or</div>
+
+        <button type="button" class="btn btn--google w-100" id="googleAuthBtn">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          Continue with Google
+        </button>
+
+        <div class="auth-card__footer text-center">
+          <p id="toggleText">Don't have an account? <a href="#" id="toggleAuth">Sign Up Free</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-slot"></div>
+
+  <!-- Firebase SDKs (Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+  <!-- Scripts -->
+  <script src="js/firebase-config.js?v=20260328"></script>
+  <script src="js/data.js?v=20260328"></script>
+  <script src="js/config.js?v=20260328"></script>
+  <script src="js/components.js?v=20260328"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      DreamGreenData.init(function() {
+        DreamGreenComponents.initPage({
+          onReady: function () {
+            // Page ready
+          }
+        });
+      });
+
+      var isLogin = true;
+      var authForm = document.getElementById('authForm');
+      var authTitle = document.getElementById('authTitle');
+      var authSubtitle = document.getElementById('authSubtitle');
+      var authBtn = document.getElementById('authBtn');
+      var toggleAuth = document.getElementById('toggleAuth');
+      var toggleText = document.getElementById('toggleText');
+      var nameGroup = document.getElementById('nameGroup');
+      var errorMessage = document.getElementById('errorMessage');
+
+      toggleAuth.addEventListener('click', function (e) {
+        e.preventDefault();
+        isLogin = !isLogin;
+        
+        if (isLogin) {
+          authTitle.textContent = 'Welcome Back';
+          authSubtitle.textContent = 'Login to your Dream Green account';
+          authBtn.textContent = 'Login';
+          toggleText.innerHTML = "Don't have an account? <a href='#' id='toggleAuth'>Sign Up Free</a>";
+          nameGroup.style.display = 'none';
+          document.getElementById('regName').required = false;
+        } else {
+          authTitle.textContent = 'Join Dream Green';
+          authSubtitle.textContent = 'Create an account to track your plant gifts';
+          authBtn.textContent = 'Create Account';
+          toggleText.innerHTML = "Already have an account? <a href='#' id='toggleAuth'>Log In Instead</a>";
+          nameGroup.style.display = 'block';
+          document.getElementById('regName').required = true;
+        }
+        
+        // Re-attach listener as innerHTML replaces the node
+        document.getElementById('toggleAuth').addEventListener('click', arguments.callee);
+      });
+
+      authForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        errorMessage.style.display = 'none';
+        authBtn.disabled = true;
+        authBtn.textContent = isLogin ? 'Logging in...' : 'Creating account...';
+
+        var email = document.getElementById('email').value;
+        var password = document.getElementById('password').value;
+        var name = document.getElementById('regName').value;
+
+        try {
+          if (isLogin) {
+            await auth.signInWithEmailAndPassword(email, password);
+          } else {
+            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+            await userCredential.user.updateProfile({ displayName: name });
+          }
+          
+          handlePostAuth();
+        } catch (error) {
+          errorMessage.textContent = error.message;
+          errorMessage.style.display = 'block';
+          authBtn.disabled = false;
+          authBtn.textContent = isLogin ? 'Login' : 'Create Account';
+        }
+      });
+
+      // Google Login Logic
+      document.getElementById('googleAuthBtn').addEventListener('click', async function() {
+        var btn = this;
+        btn.disabled = true;
+        errorMessage.style.display = 'none';
+
+        var provider = new firebase.auth.GoogleAuthProvider();
+        try {
+          await auth.signInWithPopup(provider);
+          handlePostAuth();
+        } catch (error) {
+          errorMessage.textContent = error.message;
+          errorMessage.style.display = 'block';
+          btn.disabled = false;
+        }
+      });
+
+      function handlePostAuth() {
+        var redirect = new URLSearchParams(window.location.search).get('redirect') || 'account.html';
+        window.location.href = redirect;
+      }
+    });
+  </script>
+</body>
+</html>

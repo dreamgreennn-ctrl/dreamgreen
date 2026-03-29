@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout — Dream Green | Surat, Gujarat</title>
+  <meta name="description" content="Complete your gift order. Same-day delivery across Surat, Gujarat.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=1772778382811">
+</head>
+<body>
+  <div id="nav-slot"></div>
+
+  <section class="checkout-page section" style="padding-top:calc(var(--nav-height) + 2rem);">
+    <div class="container">
+      <div class="page-header__breadcrumb" style="margin-bottom:1.5rem;">
+        <a href="index.html">Home</a> <span>/</span> <a href="cart.html">Cart</a> <span>/</span> <span>Checkout</span>
+      </div>
+      <h1 class="page-header__title reveal">Complete Your Gift</h1>
+      
+      <div class="cart-page__layout" id="checkoutLayout">
+        <!-- Main Form -->
+        <div class="checkout-form reveal">
+          <form id="checkoutForm">
+            <div class="checkout-section">
+              <h3 class="checkout-section__title">1. Your Details</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="senderName">Your Name</label>
+                  <input type="text" id="senderName" required placeholder="Full Name">
+                </div>
+                <div class="form-group">
+                  <label for="senderEmail">Email Address</label>
+                  <input type="email" id="senderEmail" required placeholder="hello@example.com">
+                </div>
+                <div class="form-group">
+                  <label for="senderPhone">Your Phone / WhatsApp</label>
+                  <input type="tel" id="senderPhone" required placeholder="+91 9898081729">
+                </div>
+              </div>
+            </div>
+
+            <div class="checkout-section">
+              <h3 class="checkout-section__title">2. Recipient & Delivery (Surat)</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="recipientName">Recipient Name</label>
+                  <input type="text" id="recipientName" required placeholder="Who is this gift for?">
+                </div>
+                <div class="form-group">
+                  <label for="recipientPhone">Recipient Phone</label>
+                  <input type="tel" id="recipientPhone" required placeholder="+91 9898081729">
+                </div>
+                <div class="form-group full-width">
+                  <label for="deliveryAddress">Delivery Address in Surat</label>
+                  <textarea id="deliveryAddress" required rows="3" placeholder="Flat/House No, Building, Street, Area"></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="deliveryArea">Area / Colony</label>
+                  <input type="text" id="deliveryArea" required placeholder="e.g. Adajan, Vesu, etc.">
+                </div>
+                <div class="form-group">
+                  <label for="deliveryDate">Preferred Date</label>
+                  <input type="date" id="deliveryDate" required>
+                </div>
+              </div>
+            </div>
+
+            <div class="checkout-section">
+              <h3 class="checkout-section__title">3. Personalized Message (Free)</h3>
+              <div class="form-group full-width">
+                <label for="giftMessage">Your Message on the Card</label>
+                <textarea id="giftMessage" rows="4" placeholder="Write something heartfelt..."></textarea>
+              </div>
+            </div>
+
+            <div class="checkout-actions">
+              <button type="submit" class="btn btn--primary btn--large w-100" id="placeOrderBtn">Confirm Gift Order</button>
+              <p class="checkout-note" style="color:var(--terracotta); font-weight:600;">🌿 Payment Method: Pay on Delivery (Cash or UPI accepted)</p>
+            </div>
+          </form>
+        </div>
+
+        <!-- Order Summary Sidebar -->
+        <aside class="checkout-summary reveal-right" id="orderSummarySide">
+           <!-- Rendered via JS -->
+        </aside>
+      </div>
+
+      <!-- Success Screen (Hidden) -->
+      <div id="orderSuccess" style="display:none;" class="reveal text-center">
+        <div class="success-icon" style="font-size:5rem; margin-bottom:1rem;">🎉</div>
+        <h2 class="section-title">Order Placed Successfully!</h2>
+        <p class="section-subtitle">Thank you for choosing Dream Green. Your gift will be delivered as scheduled.</p>
+        <div style="margin-top:2rem;">
+          <a href="index.html" class="btn btn--primary">Back to Home</a>
+          <a href="shop.html" class="btn btn--outline" style="margin-left:1rem;">Continue Gifting</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-slot"></div>
+
+  <!-- Firebase SDKs (Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+  <!-- Scripts -->
+  <script src="js/firebase-config.js?v=1772778382811"></script>
+  <script src="js/data.js?v=1772778382811"></script>
+  <script src="js/cart.js?v=1772778382811"></script>
+  <script src="js/config.js?v=1772778382811"></script>
+  <script src="js/components.js?v=1772778382811"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      DreamGreenData.init(function() {
+        DreamGreenComponents.initPage({
+          onReady: function () {
+            var items = DreamGreenCart.getCartDetails();
+            if (items.length === 0) {
+              window.location.href = 'cart.html';
+              return;
+            }
+            renderCheckoutSummary();
+            
+            // Set min date to today for delivery
+            var today = new Date().toISOString().split('T')[0];
+            document.getElementById('deliveryDate').setAttribute('min', today);
+            document.getElementById('deliveryDate').value = today;
+            
+            // Check if user is logged in to pre-fill
+            auth.onAuthStateChanged(function(user) {
+              if (user) {
+                document.getElementById('senderName').value = user.displayName || '';
+                document.getElementById('senderEmail').value = user.email || '';
+              }
+            });
+            
+            // Form submission
+            document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
+              e.preventDefault();
+              var btn = document.getElementById('placeOrderBtn');
+              btn.disabled = true;
+              btn.textContent = 'Processing...';
+
+              var items = DreamGreenCart.getCartDetails();
+              var totalPrice = DreamGreenCart.getTotalPrice();
+              var deliveryFee = totalPrice >= 499 ? 0 : 49;
+              
+              // Handle discounts
+              var discount = 0;
+              var couponCode = document.getElementById('couponCodeDisplay') ? document.getElementById('couponCodeDisplay').getAttribute('data-code') : null;
+              if (window.appliedCoupon) {
+                if (window.appliedCoupon.type === 'percent') {
+                  discount = Math.round(totalPrice * (window.appliedCoupon.value / 100));
+                } else {
+                  discount = window.appliedCoupon.value;
+                }
+              }
+              
+              var user = auth.currentUser;
+
+              var orderData = {
+                uid: user ? user.uid : 'guest',
+                senderName: document.getElementById('senderName').value,
+                senderEmail: document.getElementById('senderEmail').value,
+                senderPhone: document.getElementById('senderPhone').value,
+                recipientName: document.getElementById('recipientName').value,
+                recipientPhone: document.getElementById('recipientPhone').value,
+                deliveryAddress: document.getElementById('deliveryAddress').value,
+                deliveryArea: document.getElementById('deliveryArea').value,
+                deliveryDate: document.getElementById('deliveryDate').value,
+                giftMessage: document.getElementById('giftMessage').value,
+                items: items.map(function(item) {
+                  return {
+                    productId: item.id,
+                    productName: item.product.name,
+                    price: item.product.price,
+                    qty: item.qty
+                  };
+                }),
+                discount: discount,
+                couponCode: couponCode,
+                subtotal: totalPrice,
+                deliveryFee: deliveryFee,
+                total: totalPrice + deliveryFee - discount,
+                status: 'Pending',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+              };
+
+              try {
+                // 1. Save to Database
+                await db.collection('orders').add(orderData);
+                
+                // 2. Trigger Email Notifications (Free Google Bridge)
+                var emailBridgeUrl = window.DreamGreenConfig.confirmOrderEmailUrl;
+                
+                // We send this as a background task (non-blocking)
+                fetch(emailBridgeUrl, {
+                  method: 'POST',
+                  mode: 'no-cors', // Google Apps Script requires no-cors for simple POST
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(orderData)
+                }).catch(function(e) { console.warn('Email notification failed:', e); });
+
+                // 3. Clear Cart & Show Success
+                DreamGreenCart.clear();
+                document.getElementById('checkoutLayout').style.display = 'none';
+                document.querySelector('.page-header__title').style.display = 'none';
+                document.getElementById('orderSuccess').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              } catch (error) {
+                alert('Error placing order: ' + error.message);
+                btn.disabled = false;
+                btn.textContent = 'Confirm Gift Order';
+              }
+            });
+          }
+        });
+      });
+
+      function renderCheckoutSummary() {
+        var side = document.getElementById('orderSummarySide');
+        var items = DreamGreenCart.getCartDetails();
+        var totalPrice = DreamGreenCart.getTotalPrice();
+        var deliveryFee = totalPrice >= 499 ? 0 : 49;
+
+        var html = '<div class="cart-summary">' +
+          '<h3 class="cart-summary__title">Gift Summary</h3>' +
+          '<div class="checkout-items-list" style="margin-bottom:1.5rem;">' +
+            items.map(function(item) {
+              return '<div class="checkout-item-mini" style="display:flex; gap:1rem; margin-bottom:1rem; align-items:center;">' +
+                '<img src="' + item.product.image + '" width="50" height="50" style="border-radius:4px; object-fit:cover;">' +
+                '<div style="flex:1;">' +
+                  '<div style="font-size:0.9rem; font-weight:500;">' + item.product.name + '</div>' +
+                  '<div style="font-size:0.8rem; color:var(--charcoal-light);">Qty: ' + item.qty + '</div>' +
+                '</div>' +
+                '<div style="font-size:0.9rem;">' + DreamGreenComponents.formatPrice(item.subtotal) + '</div>' +
+              '</div>';
+            }).join('') +
+          '</div>' +
+          '<div class="coupon-section" style="margin-bottom:1.5rem;">' +
+            '<div style="display:flex; gap:0.5rem;">' +
+              '<input type="text" id="couponInput" placeholder="Coupon Code" style="flex:1; padding:0.6rem; border:1px solid var(--border); border-radius:8px; font-size:0.85rem; text-transform:uppercase;">' +
+              '<button type="button" onclick="applyCoupon()" class="btn btn--outline" style="padding:0.6rem 1rem; font-size:0.8rem;">Apply</button>' +
+            '</div>' +
+            '<div id="couponMessage" style="font-size:0.75rem; margin-top:0.5rem; display:none;"></div>' +
+          '</div>' +
+          '<div class="cart-summary__row"><span>Subtotal</span><span>' + DreamGreenComponents.formatPrice(totalPrice) + '</span></div>' +
+          '<div class="cart-summary__row"><span>Gift Wrapping</span><span class="cart-summary__free">Free</span></div>' +
+          '<div class="cart-summary__row"><span>Delivery</span><span>' + (deliveryFee === 0 ? '<span class="cart-summary__free">Free</span>' : DreamGreenComponents.formatPrice(deliveryFee)) + '</span></div>';
+        
+        if (window.appliedCoupon) {
+            var disc = 0;
+            if (window.appliedCoupon.type === 'percent') disc = Math.round(totalPrice * (window.appliedCoupon.value / 100));
+            else disc = window.appliedCoupon.value;
+            
+            html += '<div class="cart-summary__row" id="couponCodeDisplay" data-code="' + window.appliedCoupon.code + '" style="color:var(--primary-dark); font-weight:600;"><span>Promo (' + window.appliedCoupon.code + ')</span><span>-' + DreamGreenComponents.formatPrice(disc) + '</span></div>';
+            totalPrice -= disc;
+        }
+
+        html += '<div class="cart-summary__divider"></div>' +
+          '<div class="cart-summary__row cart-summary__total"><span>Total</span><span>' + DreamGreenComponents.formatPrice(totalPrice + deliveryFee) + '</span></div>' +
+        '</div>';
+        
+        side.innerHTML = html;
+      }
+
+      window.applyCoupon = function() {
+          var code = document.getElementById('couponInput').value.toUpperCase().trim();
+          var msg = document.getElementById('couponMessage');
+          var totalPrice = DreamGreenCart.getTotalPrice();
+          
+          if (!code) return;
+          
+          var coupon = DreamGreenData.coupons.find(function(c) { return c.code === code; });
+          
+          if (!coupon) {
+              msg.textContent = 'Invalid coupon code. Please check for typos.';
+              msg.style.color = 'var(--error)';
+              msg.style.display = 'block';
+              return;
+          }
+          
+          if (!coupon.active) {
+              msg.textContent = 'This coupon is no longer active.';
+              msg.style.color = 'var(--error)';
+              msg.style.display = 'block';
+              return;
+          }
+          
+          if (totalPrice < (coupon.minOrder || 0)) {
+              msg.textContent = 'Minimum order of ' + DreamGreenComponents.formatPrice(coupon.minOrder) + ' required.';
+              msg.style.color = 'var(--error)';
+              msg.style.display = 'block';
+              return;
+          }
+          
+          window.appliedCoupon = coupon;
+          renderCheckoutSummary();
+          
+          msg = document.getElementById('couponMessage');
+          msg.textContent = 'Coupon applied successfully!';
+          msg.style.color = 'var(--primary-dark)';
+          msg.style.display = 'block';
+      };
+    });
+  </script>
+</body>
+</html>
