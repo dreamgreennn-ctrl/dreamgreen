@@ -2168,13 +2168,7 @@ body:not(.has-hero) main {
 /* Tablets & Mobile Navigation Stability */
 @media (max-width: 1024px) {
   .navbar {
-    top: 1rem !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    width: calc(100% - 2rem) !important;
-    max-width: 600px !important;
-    border-radius: var(--radius-pill) !important;
-    z-index: 9999 !important;
+    top: 1rem;
   }
   
   .navbar.scrolled {
