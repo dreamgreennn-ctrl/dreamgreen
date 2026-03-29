@@ -3550,11 +3550,26 @@ body:not(.has-hero) main {
     padding: 0 1.25rem !important;
   }
 
-  .navbar__logo,
-  .navbar__logo-text,
-  .navbar__link {
-    font-size: 1.25rem !important;
+  .navbar__logo {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  .navbar__logo-text {
+    font-size: 1.15rem !important;
+    font-weight: 600 !important;
     color: var(--deep-green) !important;
+    white-space: nowrap !important;
+  }
+
+  .navbar__link {
+    font-size: 0.85rem !important;
+    color: var(--deep-green) !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
   }
 
   .navbar__icon-btn {
