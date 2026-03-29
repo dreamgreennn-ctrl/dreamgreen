@@ -326,6 +326,25 @@ body.has-hero .navbar.scrolled {
   top: 1rem;
 }
 
+/* New: Ensure dark colors for Light Hero even when NOT scrolled */
+body.has-hero .navbar:not(.scrolled) .navbar__logo,
+body.has-hero .navbar:not(.scrolled) .navbar__logo-text,
+body.has-hero .navbar:not(.scrolled) .navbar__link {
+  color: var(--deep-green) !important;
+}
+
+body.has-hero .navbar:not(.scrolled) .navbar__icon-btn {
+  color: var(--charcoal) !important;
+}
+
+body.has-hero .navbar:not(.scrolled) .navbar__icon-btn svg {
+  stroke: var(--charcoal) !important;
+}
+
+body.has-hero .navbar:not(.scrolled) .navbar__hamburger span {
+  background-color: var(--charcoal) !important;
+}
+
 /* Explicitly return to dark colors when scrolled even on Hero page */
 body.has-hero .navbar.scrolled .navbar__logo,
 body.has-hero .navbar.scrolled .navbar__logo-text {
