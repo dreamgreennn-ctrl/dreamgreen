@@ -828,6 +828,11 @@ If you have any queries, feel free to reach out to us right here.`)}"
       // AUTO-SYNC: Update the consolidated website_data document
       await syncWebsiteData();
       
+      // CACHE BUST: Ensure visitors see changes instantly
+      if (typeof DreamGreenData !== 'undefined' && DreamGreenData.clearCache) {
+        DreamGreenData.clearCache();
+      }
+      
       alert('Saved and Synchronized successfully!');
       if (currentSection !== 'settings') {
         loadSection(currentSection);
@@ -853,6 +858,11 @@ If you have any queries, feel free to reach out to us right here.`)}"
       
       // AUTO-SYNC after deletion
       await syncWebsiteData();
+      
+      // CACHE BUST: Ensure visitors see changes instantly
+      if (typeof DreamGreenData !== 'undefined' && DreamGreenData.clearCache) {
+        DreamGreenData.clearCache();
+      }
       
       loadSection(currentSection);
     } catch (error) {

@@ -8,7 +8,7 @@ var DreamGreenData = (function () {
 
   // Cache Configuration
   var CACHE_KEY = 'dreamgreen_data_v2';
-  var CACHE_TTL = 3600000; // 1 Hour in milliseconds
+  var CACHE_TTL = 300000; // 5 Minutes in milliseconds (Reduced from 1 Hour for better dev experience)
 
   var seedProducts = [
     {
