@@ -21,7 +21,7 @@ function init() {
   // 1. Scene & Camera
   scene = new THREE.Scene();
   
-  const width = container.clientWidth || window.innerWidth;
+  const width = document.documentElement.clientWidth;
   const height = container.clientHeight || 520;
   
   // Slightly wider FOV and further camera to prevent clipping
@@ -132,8 +132,8 @@ function init() {
 }
 
 function onWindowResize() {
-  // Use the full window or hero section dimensions now
-  const width = window.innerWidth;
+  // CRITICAL: Use clientWidth to ignore scrollbar width for perfect layout alignment
+  const width = document.documentElement.clientWidth;
   const height = document.getElementById('hero')?.clientHeight || window.innerHeight;
   
   camera.aspect = width / height;
