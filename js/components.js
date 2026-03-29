@@ -195,12 +195,6 @@ var DreamGreenComponents = (function () {
   function initScrollReveals() {
     var elements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
     
-    // If preloader exists and isn't loaded yet, wait.
-    var preloader = document.getElementById('preloader');
-    if (preloader && !preloader.classList.contains('loaded')) {
-      return; // Stop here, we'll call this again from hero-3d.js
-    }
-
     if ('IntersectionObserver' in window) {
       var observer = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
@@ -365,7 +359,17 @@ var DreamGreenComponents = (function () {
       if (footerSlot) footerSlot.innerHTML = renderFooter();
 
       initNavbar();
+      // Dismiss preloader if exists
+    var preloader = document.getElementById('preloader');
+    if (preloader) {
+      setTimeout(function() {
+        preloader.classList.add('loaded');
+        initScrollReveals();
+        setTimeout(function() { preloader.style.display = 'none'; }, 1000);
+      }, 500); 
+    } else {
       initScrollReveals();
+    }
       initSmoothScroll();
       initAddToCartButtons();
 

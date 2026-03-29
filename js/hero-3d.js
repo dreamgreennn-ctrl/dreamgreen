@@ -63,6 +63,12 @@ function init() {
   const normalMap = textureLoader.load('PlantOrchid001/PlantOrchid001_NRM_2K_METALNESS.jpg');
   const roughnessMap = textureLoader.load('PlantOrchid001/PlantOrchid001_ROUGHNESS_2K_METALNESS.jpg');
 
+  // CRITICAL for GLB: Textures must not be flipped!
+  colorMap.flipY = false;
+  normalMap.flipY = false;
+  roughnessMap.flipY = false;
+  colorMap.encoding = THREE.sRGBEncoding;
+
   // 5. Load GLB Model
   const gltfLoader = new GLTFLoader();
   gltfLoader.load('PlantOrchid001/PlantOrchid001-compressed.glb', (gltf) => {
@@ -74,7 +80,7 @@ function init() {
     
     model.traverse((child) => {
       if (child.isMesh) {
-        // Enforce high-end materials
+        // Enforce high-end materials with corrected UV orientation
         child.material = new THREE.MeshStandardMaterial({
           map: colorMap,
           normalMap: normalMap,
@@ -82,6 +88,7 @@ function init() {
           roughness: 0.8,
           metalness: 0.1
         });
+        child.material.needsUpdate = true;
       }
     });
 
