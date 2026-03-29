@@ -230,8 +230,8 @@ input, textarea {
 
 /* --- Scroll Animations --- */
 .reveal {
-  opacity: 0;
-  transform: translateY(30px);
+  opacity: 1;
+  transform: translateY(0);
   transition: opacity var(--duration-slow) var(--ease-out), 
               transform var(--duration-slow) var(--ease-out);
 }
@@ -242,8 +242,8 @@ input, textarea {
 }
 
 .reveal-left {
-  opacity: 0;
-  transform: translateX(-40px);
+  opacity: 1;
+  transform: translateX(0);
   transition: opacity var(--duration-slow) var(--ease-out), 
               transform var(--duration-slow) var(--ease-out);
 }
@@ -254,8 +254,8 @@ input, textarea {
 }
 
 .reveal-right {
-  opacity: 0;
-  transform: translateX(40px);
+  opacity: 1;
+  transform: translateX(0);
   transition: opacity var(--duration-slow) var(--ease-out), 
               transform var(--duration-slow) var(--ease-out);
 }
@@ -266,8 +266,8 @@ input, textarea {
 }
 
 .reveal-scale {
-  opacity: 0;
-  transform: scale(0.92);
+  opacity: 1;
+  transform: scale(1);
   transition: opacity var(--duration-slow) var(--ease-out), 
               transform var(--duration-slow) var(--ease-out);
 }
@@ -1650,7 +1650,7 @@ body:not(.has-hero) main {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--sage-dark);
+  color: var(--sage-dark) !important;
   margin-bottom: 0.5rem;
 }
 
@@ -2461,11 +2461,15 @@ body:not(.has-hero) main {
   align-items: center;
   gap: 0.5rem;
   font-size: 0.9rem;
-  color: var(--charcoal);
+  color: var(--charcoal) !important;
   cursor: pointer;
   padding: 0.35rem 0.5rem;
   border-radius: var(--radius-sm);
   transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.filter-option span {
+  color: var(--charcoal) !important;
 }
 
 .filter-option:hover {
@@ -2500,9 +2504,9 @@ body:not(.has-hero) main {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
-  font-size: 0.9rem;
-  color: var(--charcoal-light);
+  margin-bottom: 2rem;
+  color: var(--charcoal);
+  font-weight: 500;
 }
 
 .shop__filter-toggle {
@@ -2671,6 +2675,16 @@ body:not(.has-hero) main {
   border: 1px solid rgba(45, 74, 62, 0.15);
   border-radius: var(--radius-sm);
   overflow: hidden;
+}
+
+.qty-body {
+  font-family: var(--font-body);
+  background-color: var(--cream);
+  color: var(--charcoal);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .qty-btn {
@@ -3070,9 +3084,9 @@ body:not(.has-hero) main {
 .form-group select {
   padding: 0.7rem 1rem;
   font-size: 0.92rem;
-  border: 1px solid rgba(45, 74, 62, 0.15);
+  border: 1px solid rgba(45, 74, 62, 0.3);
   border-radius: var(--radius-sm);
-  background-color: var(--cream);
+  background-color: var(--white);
   color: var(--charcoal);
   transition: border-color var(--duration-fast) var(--ease-out);
   font-family: var(--font-body);
@@ -3156,7 +3170,7 @@ body:not(.has-hero) main {
 
 .checkout-note {
   font-size: 0.82rem;
-  color: var(--charcoal-light);
+  color: var(--charcoal);
   text-align: center;
   margin-top: 1rem;
 }
@@ -3293,6 +3307,7 @@ body:not(.has-hero) main {
 .blog-article__meta {
   font-size: 0.85rem;
   color: var(--charcoal-light);
+  margin-bottom: 1rem;
 }
 
 .blog-article__hero {
@@ -3311,7 +3326,7 @@ body:not(.has-hero) main {
 .blog-article__body {
   font-size: 1.05rem;
   line-height: 1.9;
-  color: var(--charcoal-light);
+  color: var(--charcoal);
 }
 
 .blog-article__body h3 {
@@ -3361,7 +3376,7 @@ body:not(.has-hero) main {
 
 .blog-card__meta {
   font-size: 0.78rem;
-  color: var(--charcoal-light);
+  color: var(--charcoal);
   margin-bottom: 0.5rem;
 }
 
@@ -3432,6 +3447,12 @@ body:not(.has-hero) main {
    ============================================================ */
 .about-content {
   padding: 1rem 0;
+  color: var(--charcoal);
+}
+
+.about-content p, 
+.about-content div {
+  color: var(--charcoal);
 }
 
 .about-info-block h3 {
