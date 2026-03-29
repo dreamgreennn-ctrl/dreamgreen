@@ -110,79 +110,19 @@
       async function fetchOrders(uid) {
         var orderList = document.getElementById('orderList');
         var userEmail = auth.currentUser ? auth.currentUser.email : null;
+        var orders = [];
         
-        orderList.innerHTML = '<div class="loading-spinner">🔍 Searching for your orders (ID: ' + uid.slice(0,5) + '...)...</div>';
+        orderList.innerHTML = '<div class="loading-spinner">🔍 Searching for your orders...</div>';
         
+        // 1. Primary Fetch: Orders linked to this specific UID
         try {
           console.log("Fetching orders for UID:", uid);
-          // Attempt 1: Fetch by UID
-          let snapshot = await db.collection('orders')
-            .where('uid', '==', uid)
-            .get();
-
-          let orders = [];
+          let snapshot = await db.collection('orders').where('uid', '==', uid).get();
           snapshot.forEach(doc => orders.push(Object.assign({ firebaseId: doc.id }, doc.data())));
           console.log("Orders found by UID:", orders.length);
-
-          // Attempt 2: Fallback to Email (for orders placed as guest with the same email)
-          if (orders.length === 0 && userEmail) {
-            orderList.innerHTML = '<div class="loading-spinner">📧 Checking guest orders for ' + userEmail + '...</div>';
-            let emailSnapshot = await db.collection('orders')
-              .where('senderEmail', '==', userEmail)
-              .get();
-            
-            emailSnapshot.forEach(doc => {
-              const data = doc.data();
-              if (data.uid === 'guest') {
-                orders.push(Object.assign({ firebaseId: doc.id }, data));
-              }
-            });
-            console.log("Total orders found after email fallback:", orders.length);
-          }
-
-          if (orders.length === 0) {
-            orderList.innerHTML = 
-              '<div class="empty-state">' +
-                '<h3>No orders found yet</h3>' +
-                '<p>We couldn\'t find any orders linked to this account (' + userEmail + ').</p>' +
-                '<p style="font-size:0.85rem; margin-top:0.5rem; color:var(--charcoal-light);">Tip: Did you use a different email during checkout?</p>' +
-                '<a href="shop.html" class="btn btn--primary" style="margin-top:1.5rem;">Send your first Gift</a>' +
-              '</div>';
-            return;
-          }
-
-          // Sort by date locally
-          orders.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-
-          orderList.innerHTML = '';
-          orders.forEach(order => {
-            const orderId = order.firebaseId;
-            const date = order.createdAt ? new Date(order.createdAt.seconds * 1000).toLocaleDateString() : 'Recent';
-            const status = order.status || 'Pending';
-            const statusClass = status.toLowerCase().replace(/\s+/g, '-');
-
-            const orderCard = document.createElement('div');
-            orderCard.className = 'order-card'; 
-            orderCard.style.borderLeft = '4px solid var(--sage)';
-            orderCard.innerHTML = `
-              <div class="order-card__header">
-                <div class="order-card__info">
-                  <span class="order-card__date">${date}</span>
-                  <span class="order-card__id">Order #${orderId.slice(-6).toUpperCase()}</span>
-                </div>
-                <div class="order-card__status badge-${statusClass}">${status}</div>
-              </div>
-              <div class="order-card__body">
-                <div class="order-card__items">
-                  ${(order.items || []).map(i => `<span><strong>${i.qty}x</strong> ${i.productName}</span>`).join('')}
-                </div>
-                <div class="order-card__total">Total Paid: ₹${order.total}</div>
-              </div>
-            `;
-            orderList.appendChild(orderCard);
-          });
         } catch (error) {
-          console.error("Order fetch error:", error);
+          console.error("UID fetch error:", error);
+          // If the primary query fails fundamentally, we show the connection issue
           orderList.innerHTML = 
             '<div class="error-box" style="padding:2rem; background:#fff5f5; border:1px solid #ffc9c9; border-radius:12px; color:#c92a2a;">' +
               '<h4 style="margin-bottom:1rem;">⚠️ Connection Issue</h4>' +
@@ -190,7 +130,71 @@
               '<p style="font-size:0.85rem; margin-top:1rem; opacity:0.8;">Details: ' + error.message + '</p>' +
               '<button onclick="location.reload()" class="btn btn--outline" style="margin-top:1.5rem; font-size:0.8rem;">Try Again</button>' +
             '</div>';
+          return;
         }
+
+        // 2. Secondary Fallback: Try linking Guest orders by email (If primary found nothing)
+        if (orders.length === 0 && userEmail) {
+          try {
+            console.log("Checking for guest orders for email:", userEmail);
+            let emailSnapshot = await db.collection('orders').where('senderEmail', '==', userEmail).get();
+            emailSnapshot.forEach(doc => {
+              const data = doc.data();
+              // Only add if it's a guest order (to avoid duplicates or permission issues with other accounts)
+              if (data.uid === 'guest') {
+                orders.push(Object.assign({ firebaseId: doc.id }, data));
+              }
+            });
+            console.log("Orders found after guest fallback:", orders.length);
+          } catch (error) {
+            console.warn("Guest fallback query failed (likely permission rules):", error.message);
+            // We DON'T crash here, because the primary query worked or found nothing.
+            // This fallback is often blocked by Firestore rules for new users.
+          }
+        }
+
+        // 3. Final Render
+        if (orders.length === 0) {
+          orderList.innerHTML = 
+            '<div class="empty-state" style="text-align:center; padding:3rem 1rem;">' +
+              '<h3 style="color:var(--deep-green); margin-bottom:0.5rem;">No orders found yet</h3>' +
+              '<p style="color:var(--charcoal-light);">We couldn\'t find any orders linked to your email (' + userEmail + ').</p>' +
+              '<p style="font-size:0.85rem; margin-top:0.75rem; color:var(--sage-dark);">Tip: Did you use a different email during a previous checkout?</p>' +
+              '<a href="shop.html" class="btn btn--primary" style="margin-top:2rem;">Send your first Gift</a>' +
+            '</div>';
+          return;
+        }
+
+        // Sort by date locally
+        orders.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
+        orderList.innerHTML = '';
+        orders.forEach(order => {
+          const orderId = order.firebaseId;
+          const date = order.createdAt ? new Date(order.createdAt.seconds * 1000).toLocaleDateString() : 'Recent';
+          const status = order.status || 'Pending';
+          const statusClass = status.toLowerCase().replace(/\s+/g, '-');
+
+          const orderCard = document.createElement('div');
+          orderCard.className = 'order-card reveal'; 
+          orderCard.style.borderLeft = '4px solid var(--sage)';
+          orderCard.innerHTML = `
+            <div class="order-card__header">
+              <div class="order-card__info">
+                <span class="order-card__date">${date}</span>
+                <span class="order-card__id">Order #${orderId.slice(-6).toUpperCase()}</span>
+              </div>
+              <div class="order-card__status badge-${statusClass}">${status}</div>
+            </div>
+            <div class="order-card__body">
+              <div class="order-card__items">
+                ${(order.items || []).map(i => `<span><strong>${i.qty}x</strong> ${i.productName}</span>`).join('')}
+              </div>
+              <div class="order-card__total">Total: ₹${order.total}</div>
+            </div>
+          `;
+          orderList.appendChild(orderCard);
+        });
       }
     });
   </script>
