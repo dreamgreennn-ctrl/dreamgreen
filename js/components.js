@@ -359,17 +359,20 @@ var DreamGreenComponents = (function () {
       if (footerSlot) footerSlot.innerHTML = renderFooter();
 
       initNavbar();
-      // Dismiss preloader if exists
-    var preloader = document.getElementById('preloader');
-    if (preloader) {
-      setTimeout(function() {
-        preloader.classList.add('loaded');
-        initScrollReveals();
-        setTimeout(function() { preloader.style.display = 'none'; }, 1000);
-      }, 500); 
-    } else {
-      initScrollReveals();
-    }
+      
+      // Robust Preloader Dismissal
+      function dismissPreloader() {
+        var preloader = document.getElementById('preloader');
+        if (preloader && !preloader.classList.contains('loaded')) {
+          preloader.classList.add('loaded');
+          initScrollReveals();
+          setTimeout(function() { preloader.style.display = 'none'; }, 1000);
+        }
+      }
+
+      // Safe fallback - dismiss quickly since 3D weight is gone
+      setTimeout(dismissPreloader, 400); 
+
       initSmoothScroll();
       initAddToCartButtons();
 

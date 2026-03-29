@@ -599,7 +599,7 @@ body:not(.has-hero) main {
 .hero__img-static {
   width: 100%;
   height: auto;
-  border-radius: var(--radius-lg);
+  border-radius: 32px;
   box-shadow: 0 20px 80px rgba(45, 74, 62, 0.12);
   transition: transform var(--duration-slow) var(--ease-out);
 }
@@ -3504,7 +3504,7 @@ body:not(.has-hero) main {
     justify-content: center;
   }
 
-  /* NAVBAR MOBILE FIX â€” Restore Floating Pill Capsule on Phone */
+  /* NAVBAR MOBILE FIX — Restore Floating Pill Capsule on Phone */
   .navbar {
     top: 1rem !important;
     width: calc(100% - 2rem) !important;
