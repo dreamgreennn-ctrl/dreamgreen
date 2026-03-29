@@ -42,7 +42,17 @@
   <script src="js/components.js?v=20260328"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      // Initialize Data from Firebase first
+      // PRE-RENDER: If the cart is obviously empty in localStorage, show it immediately
+      // without waiting for database sync.
+      var initialItems = DreamGreenCart.getItems();
+      if (initialItems.length === 0) {
+        renderCart();
+      } else {
+        // Show a loading skeleton/spinner for non-empty carts until data is ready
+        document.getElementById('cartContent').innerHTML = '<div class="loading-spinner" style="padding:4rem 0;">🪴 Checking your botanical gifts...</div>';
+      }
+
+      // Initialize Data from Firebase
       DreamGreenData.init(function() {
         DreamGreenComponents.initPage({
           onReady: function () {
