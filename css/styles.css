@@ -3523,8 +3523,28 @@ body:not(.has-hero) main {
     padding: 0 1.25rem !important;
   }
 
-  .navbar__logo {
+  .navbar__logo,
+  .navbar__logo-text,
+  .navbar__link {
     font-size: 1.25rem !important;
+    color: var(--deep-green) !important;
+  }
+
+  .navbar__icon-btn {
+    color: var(--charcoal) !important;
+  }
+
+  .navbar__icon-btn svg {
+    stroke: var(--charcoal) !important;
+  }
+
+  .navbar__cart-count {
+    background-color: var(--sage) !important;
+    color: var(--white) !important;
+  }
+
+  .navbar__hamburger span {
+    background-color: var(--charcoal) !important;
   }
 
   .hero {
