@@ -19,6 +19,6 @@ window.DreamGreenConfig = {
   confirmOrderEmailUrl: 'https://script.google.com/macros/s/AKfycbyXST2hXVbs-vtJFpnSdgF_G_n-T2Ga4tSoYRPMVZQux4ByJCpkBJYHbDnamjm6I1rz5Q/exec',
   
   // Social Media
-  instagramUrl: 'https://www.instagram.com/dreamgreen.in/',
+  instagramUrl: 'https://www.instagram.com/dream.greenn/',
   facebookUrl: '#'
 };
