@@ -143,47 +143,32 @@
         
         // 1. Primary Fetch: Orders linked to this specific UID
         try {
-          console.log("Fetching orders for UID:", uid);
-          let snapshot = await db.collection('orders').where('uid', '==', uid).get();
-          snapshot.forEach(doc => orders.push(Object.assign({ firebaseId: doc.id }, doc.data())));
+          if (uid && uid !== 'guest') {
+            console.log("Fetching orders for UID:", uid);
+            let snapshot = await db.collection('orders').where('uid', '==', uid).get();
+            snapshot.forEach(doc => orders.push(Object.assign({ firebaseId: doc.id }, doc.data())));
+          }
           console.log("Orders found by UID:", orders.length);
         } catch (error) {
           console.error("UID fetch error:", error);
-          
-          // Handle permission denied gracefully (common for new users)
-          if (error.code === 'permission-denied' || error.message.includes('permissions')) {
-            console.warn("Permission denied for orders fetch - treating as empty for new user.");
-            // We just let it fall through to show 'No orders found'
-          } else {
-            // Only show the red error box for TRUE connection issues
-            orderList.innerHTML = 
-              '<div class="error-box" style="padding:2rem; background:#fff5f5; border:1px solid #ffc9c9; border-radius:12px; color:#c92a2a;">' +
-                '<h4 style="margin-bottom:1rem;">⚠️ Connection Issue</h4>' +
-                '<p>We had trouble connecting to the gift database.</p>' +
-                '<p style="font-size:0.85rem; margin-top:1rem; opacity:0.8;">Details: ' + error.message + '</p>' +
-                '<button onclick="location.reload()" class="btn btn--outline" style="margin-top:1.5rem; font-size:0.8rem;">Try Again</button>' +
-              '</div>';
-            return;
-          }
+          // Continue to email fallback even if UID fetch fails
         }
 
-        // 2. Secondary Fallback: Try linking Guest orders by email (If primary found nothing)
-        if (orders.length === 0 && userEmail) {
+        // 2. Secondary Fallback: Try linking Guest orders by email
+        if (userEmail) {
           try {
-            console.log("Checking for guest orders for email:", userEmail);
+            console.log("Checking for orders for email:", userEmail);
             let emailSnapshot = await db.collection('orders').where('senderEmail', '==', userEmail).get();
             emailSnapshot.forEach(doc => {
               const data = doc.data();
-              // Only add if it's a guest order (to avoid duplicates or permission issues with other accounts)
-              if (data.uid === 'guest') {
+              // Add if not already added by UID to avoid duplicates
+              if (!orders.some(o => o.firebaseId === doc.id)) {
                 orders.push(Object.assign({ firebaseId: doc.id }, data));
               }
             });
-            console.log("Orders found after guest fallback:", orders.length);
+            console.log("Total orders after email search:", orders.length);
           } catch (error) {
-            console.warn("Guest fallback query failed (likely permission rules):", error.message);
-            // We DON'T crash here, because the primary query worked or found nothing.
-            // This fallback is often blocked by Firestore rules for new users.
+            console.warn("Email fallback query failed:", error.message);
           }
         }
 
