@@ -6,6 +6,10 @@
    ============================================================ */
 
 window.DreamGreenConfig = {
+  // Store Identity
+  domainName: 'dreamgreen.shop',
+  siteUrl: 'https://dreamgreen.shop',
+  
   // Contact Information
   contactEmail: 'dreamgreennn@gmail.com',
   contactPhone: '+91 9898081729',
