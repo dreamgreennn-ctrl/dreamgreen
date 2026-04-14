@@ -5,7 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dream Green Journal — Plant Care & Gifting Tips | Surat</title>
   <meta name="description" content="Explore the Dream Green journal. Discover plant care tips, unique gifting ideas, and green inspiration for your home in Surat, Gujarat.">
-  <link rel="canonical" href="https://dreamgreen.shop/blog.html">
+  <link rel="canonical" href="https://dreamgreen.shop/blog.html" id="dgCanonical">
+  <script>
+    // Give each blog post a unique canonical so ?post= variants aren't folded into the listing.
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var post = params.get('post');
+      var canon = document.getElementById('dgCanonical');
+      if (post && canon) {
+        canon.setAttribute('href', 'https://dreamgreen.shop/blog.html?post=' + encodeURIComponent(post));
+      }
+    })();
+  </script>
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">

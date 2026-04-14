@@ -5,7 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Plant Gift Collections — Dream Green | Surat, Gujarat</title>
   <meta name="description" content="Explore our curated plant gift collections. From birthdays to housewarmings, find the perfect green gift for every occasion in Surat.">
-  <link rel="canonical" href="https://dreamgreen.shop/collection.html">
+  <link rel="canonical" href="https://dreamgreen.shop/collection.html" id="dgCanonical">
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var id = params.get('id');
+      var canon = document.getElementById('dgCanonical');
+      if (id && canon) {
+        canon.setAttribute('href', 'https://dreamgreen.shop/collection.html?id=' + encodeURIComponent(id));
+      } else {
+        var m = document.createElement('meta');
+        m.name = 'robots';
+        m.content = 'noindex, follow';
+        document.head.appendChild(m);
+      }
+    })();
+  </script>
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">

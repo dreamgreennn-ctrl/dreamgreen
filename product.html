@@ -5,7 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Premium Plant Gifts — Dream Green | Surat, Gujarat</title>
   <meta name="description" content="Send a beautiful living gift. Curated plants in designer pots, gift-wrapped and delivered across Surat. Perfect for birthdays, anniversaries, and more.">
-  <link rel="canonical" href="https://dreamgreen.shop/product.html">
+  <link rel="canonical" href="https://dreamgreen.shop/product.html" id="dgCanonical">
+  <script>
+    // Set a unique canonical per product so Google indexes each ?id= separately.
+    // Without this, every product.html?id=X shares one canonical and Google treats
+    // them as duplicates ("Alternative page with proper canonical tag").
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var id = params.get('id');
+      var canon = document.getElementById('dgCanonical');
+      if (id && canon) {
+        canon.setAttribute('href', 'https://dreamgreen.shop/product.html?id=' + encodeURIComponent(id));
+      } else {
+        // No product selected — don't let the bare page be indexed as a duplicate
+        var m = document.createElement('meta');
+        m.name = 'robots';
+        m.content = 'noindex, follow';
+        document.head.appendChild(m);
+      }
+    })();
+  </script>
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="product">
@@ -142,10 +161,6 @@
               s2.type = 'application/ld+json';
               s2.text = JSON.stringify(breadcrumbLd);
               document.head.appendChild(s2);
-
-              // Keep canonical tag pointing to the specific product URL
-              var canon = document.querySelector('link[rel="canonical"]');
-              if (canon) canon.setAttribute('href', productUrl);
 
               // Rich meta description based on product
               var metaDesc = document.querySelector('meta[name="description"]');
