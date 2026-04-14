@@ -95,6 +95,65 @@
             document.title = product.name + ' — Dream Green | Surat, Gujarat';
             document.getElementById('breadcrumbName').textContent = product.name;
 
+            // Inject Product + Breadcrumb JSON-LD for Google rich results
+            try {
+              var productUrl = 'https://dreamgreen.shop/product.html?id=' + (product.id || product.firebaseId || product.slug);
+              var imageUrl = (product.image && product.image.indexOf('http') === 0)
+                ? product.image
+                : 'https://dreamgreen.shop/' + (product.image || 'assets/images/logo.png').replace(/^\//, '');
+              var productLd = {
+                "@context": "https://schema.org",
+                "@type": "Product",
+                "name": product.name,
+                "image": [imageUrl],
+                "description": product.description || 'Curated plant gift by Dream Green, delivered across Surat, Gujarat.',
+                "brand": { "@type": "Brand", "name": "Dream Green" },
+                "sku": String(product.id || product.slug || ''),
+                "offers": {
+                  "@type": "Offer",
+                  "url": productUrl,
+                  "priceCurrency": "INR",
+                  "price": product.price,
+                  "availability": product.inStock === false
+                    ? "https://schema.org/OutOfStock"
+                    : "https://schema.org/InStock",
+                  "seller": { "@type": "Organization", "name": "Dream Green" }
+                },
+                "aggregateRating": product.reviews ? {
+                  "@type": "AggregateRating",
+                  "ratingValue": product.rating || 5,
+                  "reviewCount": product.reviews
+                } : undefined
+              };
+              var breadcrumbLd = {
+                "@context": "https://schema.org",
+                "@type": "BreadcrumbList",
+                "itemListElement": [
+                  { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://dreamgreen.shop/" },
+                  { "@type": "ListItem", "position": 2, "name": "Shop", "item": "https://dreamgreen.shop/shop.html" },
+                  { "@type": "ListItem", "position": 3, "name": product.name, "item": productUrl }
+                ]
+              };
+              var s1 = document.createElement('script');
+              s1.type = 'application/ld+json';
+              s1.text = JSON.stringify(productLd);
+              document.head.appendChild(s1);
+              var s2 = document.createElement('script');
+              s2.type = 'application/ld+json';
+              s2.text = JSON.stringify(breadcrumbLd);
+              document.head.appendChild(s2);
+
+              // Keep canonical tag pointing to the specific product URL
+              var canon = document.querySelector('link[rel="canonical"]');
+              if (canon) canon.setAttribute('href', productUrl);
+
+              // Rich meta description based on product
+              var metaDesc = document.querySelector('meta[name="description"]');
+              if (metaDesc) metaDesc.setAttribute('content',
+                product.name + ' — ' + (product.description || '').slice(0, 140) +
+                ' | Dream Green, Surat, Gujarat. Same-day delivery available.');
+            } catch (e) { /* non-fatal */ }
+
             var savings = product.originalPrice ? product.originalPrice - product.price : 0;
             var outOfStock = product.inStock === false;
 
