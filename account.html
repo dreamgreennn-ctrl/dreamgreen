@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your Account — Dream Green | Surat, Gujarat</title>
   <meta name="description" content="Manage your plant gift orders, track delivery status, and update your profile. Same-day delivery across Surat, Gujarat.">
-  <link rel="canonical" href="https://dreamgreen.shop/account.html">
+  <link rel="canonical" href="https://dreamgreen.shop/account">
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://dreamgreen.shop/account.html">
+  <meta property="og:url" content="https://dreamgreen.shop/account">
   <meta property="og:title" content="Your Account — Dream Green | Surat, Gujarat">
   <meta property="og:description" content="Manage your plant gift orders and track delivery status.">
   <meta property="og:image" content="https://dreamgreen.shop/assets/images/og-account.png">
@@ -17,7 +17,7 @@
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:url" content="https://dreamgreen.shop/account.html">
+  <meta name="twitter:url" content="https://dreamgreen.shop/account">
   <meta name="twitter:title" content="Your Account — Dream Green | Surat, Gujarat">
   <meta name="twitter:description" content="Manage your plant gift orders and track delivery status.">
   <meta name="twitter:image" content="https://dreamgreen.shop/assets/images/og-account.png">
@@ -34,7 +34,7 @@
   <section class="account-page section" style="padding-top:calc(var(--nav-height) + 2rem);">
     <div class="container">
       <div class="page-header__breadcrumb" style="margin-bottom:1.5rem;">
-        <a href="index.html">Home</a> <span>/</span> <span>My Account</span>
+        <a href="/">Home</a> <span>/</span> <span>My Account</span>
       </div>
       
       <div class="account-header reveal">
@@ -100,7 +100,7 @@
           // Small delay for mobile persistence recovery
           setTimeout(function() {
             if (!auth.currentUser) {
-              window.location.href = 'login.html?redirect=account.html';
+              window.location.href = '/login?redirect=/account';
             }
           }, 1500);
         }
@@ -179,7 +179,7 @@
               '<h3 style="color:var(--deep-green); margin-bottom:0.5rem;">No orders found yet</h3>' +
               '<p style="color:var(--charcoal-light);">We couldn\'t find any orders linked to your email (' + userEmail + ').</p>' +
               '<p style="font-size:0.85rem; margin-top:0.75rem; color:var(--sage-dark);">Tip: Did you use a different email during a previous checkout?</p>' +
-              '<a href="shop.html" class="btn btn--primary" style="margin-top:2rem;">Send your first Gift</a>' +
+              '<a href="/shop" class="btn btn--primary" style="margin-top:2rem;">Send your first Gift</a>' +
             '</div>';
           return;
         }

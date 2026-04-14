@@ -5,19 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Premium Plant Gifts — Dream Green | Surat, Gujarat</title>
   <meta name="description" content="Send a beautiful living gift. Curated plants in designer pots, gift-wrapped and delivered across Surat. Perfect for birthdays, anniversaries, and more.">
-  <link rel="canonical" href="https://dreamgreen.shop/product.html" id="dgCanonical">
+  <link rel="canonical" href="https://dreamgreen.shop/shop" id="dgCanonical">
   <script>
-    // Set a unique canonical per product so Google indexes each ?id= separately.
-    // Without this, every product.html?id=X shares one canonical and Google treats
-    // them as duplicates ("Alternative page with proper canonical tag").
+    // Resolve slug from clean URL (/product/:slug) first, fall back to ?id=.
     (function () {
-      var params = new URLSearchParams(window.location.search);
-      var id = params.get('id');
+      var pathMatch = window.location.pathname.match(/^\/product\/([^\/\?#]+)/);
+      var pathSlug = pathMatch ? decodeURIComponent(pathMatch[1]) : null;
+      var querySlug = new URLSearchParams(window.location.search).get('id');
+      var slug = pathSlug || querySlug;
       var canon = document.getElementById('dgCanonical');
-      if (id && canon) {
-        canon.setAttribute('href', 'https://dreamgreen.shop/product.html?id=' + encodeURIComponent(id));
+      if (slug) {
+        window.__dgProductSlug = slug;
+        if (canon) canon.setAttribute('href', 'https://dreamgreen.shop/product/' + encodeURIComponent(slug));
       } else {
-        // No product selected — don't let the bare page be indexed as a duplicate
         var m = document.createElement('meta');
         m.name = 'robots';
         m.content = 'noindex, follow';
@@ -28,7 +28,7 @@
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="product">
-  <meta property="og:url" content="https://dreamgreen.shop/product.html">
+  <meta property="og:url" content="https://dreamgreen.shop/shop">
   <meta property="og:title" content="Premium Plant Gifts — Dream Green | Surat, Gujarat">
   <meta property="og:description" content="Send a beautiful living gift. Curated plants in designer pots, gift-wrapped and delivered across Surat.">
   <meta property="og:image" content="https://dreamgreen.shop/assets/images/og-product.png">
@@ -36,7 +36,7 @@
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:url" content="https://dreamgreen.shop/product.html">
+  <meta name="twitter:url" content="https://dreamgreen.shop/shop">
   <meta name="twitter:title" content="Premium Plant Gifts — Dream Green | Surat, Gujarat">
   <meta name="twitter:description" content="Send a beautiful living gift. Curated plants in designer pots, gift-wrapped and delivered across Surat.">
   <meta name="twitter:image" content="https://dreamgreen.shop/assets/images/og-product.png">
@@ -53,7 +53,7 @@
   <section class="product-detail section" style="padding-top:calc(var(--nav-height) + 2rem);">
     <div class="container">
       <div class="page-header__breadcrumb" id="breadcrumb" style="margin-bottom:1.5rem;">
-        <a href="index.html">Home</a> <span>/</span> <a href="shop.html">Shop</a> <span>/</span> <span id="breadcrumbName">Product</span>
+        <a href="/">Home</a> <span>/</span> <a href="/shop">Shop</a> <span>/</span> <span id="breadcrumbName">Product</span>
       </div>
       <div class="product-detail__layout" id="productContent">
         <!-- Dynamically rendered -->
@@ -88,26 +88,21 @@
       DreamGreenData.init(function() {
         DreamGreenComponents.initPage({
           onReady: function () {
-            var params = new URLSearchParams(window.location.search);
-            var productIdSource = params.get('id');
-            
-            // Nuclear Fallback: Check session storage if URL param is missing
+            // Slug already resolved in head script; fall back to query/session if needed.
+            var productIdSource = window.__dgProductSlug ||
+              new URLSearchParams(window.location.search).get('id');
             if (!productIdSource) {
-              try {
-                productIdSource = sessionStorage.getItem('last_viewed_product_id');
-              } catch(e) {}
+              try { productIdSource = sessionStorage.getItem('last_viewed_product_id'); } catch(e) {}
             }
 
             var product = DreamGreenData.getProduct(productIdSource);
 
             if (!product) {
               console.error('Product not found for ID:', productIdSource);
-              document.getElementById('productContent').innerHTML = 
-                '<div class="shop__empty"><h2>Product not found</h2>' + 
+              document.getElementById('productContent').innerHTML =
+                '<div class="shop__empty"><h2>Product not found</h2>' +
                 '<p>Sorry, we couldn\'t find that product (ID: ' + (productIdSource || 'None') + ').</p>' +
-                '<p>Full URL: ' + window.location.href + '</p>' +
-                '<p>Available products: ' + DreamGreenData.products.length + '</p>' +
-                '<a href="shop.html" class="btn btn--primary">Browse All Plants</a></div>';
+                '<a href="/shop" class="btn btn--primary">Browse All Plants</a></div>';
               return;
             }
 
@@ -116,7 +111,7 @@
 
             // Inject Product + Breadcrumb JSON-LD for Google rich results
             try {
-              var productUrl = 'https://dreamgreen.shop/product.html?id=' + (product.id || product.firebaseId || product.slug);
+              var productUrl = 'https://dreamgreen.shop/product/' + (product.slug || product.id || product.firebaseId);
               var imageUrl = (product.image && product.image.indexOf('http') === 0)
                 ? product.image
                 : 'https://dreamgreen.shop/' + (product.image || 'assets/images/logo.png').replace(/^\//, '');
@@ -149,7 +144,7 @@
                 "@type": "BreadcrumbList",
                 "itemListElement": [
                   { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://dreamgreen.shop/" },
-                  { "@type": "ListItem", "position": 2, "name": "Shop", "item": "https://dreamgreen.shop/shop.html" },
+                  { "@type": "ListItem", "position": 2, "name": "Shop", "item": "https://dreamgreen.shop/shop" },
                   { "@type": "ListItem", "position": 3, "name": product.name, "item": productUrl }
                 ]
               };

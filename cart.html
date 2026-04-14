@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your Gift Cart — Dream Green | Surat, Gujarat</title>
   <meta name="description" content="Review your curated plant gifts and proceed to secure checkout. Same-day delivery available across Surat, Gujarat.">
-  <link rel="canonical" href="https://dreamgreen.shop/cart.html">
+  <link rel="canonical" href="https://dreamgreen.shop/cart">
+  <meta name="robots" content="noindex, follow">
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://dreamgreen.shop/cart.html">
+  <meta property="og:url" content="https://dreamgreen.shop/cart">
   <meta property="og:title" content="Your Gift Cart — Dream Green | Surat, Gujarat">
   <meta property="og:description" content="Review your curated plant gifts and proceed to secure checkout.">
   <meta property="og:image" content="https://dreamgreen.shop/assets/images/og-cart.png">
@@ -17,7 +18,7 @@
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:url" content="https://dreamgreen.shop/cart.html">
+  <meta name="twitter:url" content="https://dreamgreen.shop/cart">
   <meta name="twitter:title" content="Your Gift Cart — Dream Green | Surat, Gujarat">
   <meta name="twitter:description" content="Review your curated plant gifts and proceed to secure checkout.">
   <meta name="twitter:image" content="https://dreamgreen.shop/assets/images/og-cart.png">
@@ -34,7 +35,7 @@
   <section class="cart-page section" style="padding-top:calc(var(--nav-height) + 2rem);">
     <div class="container">
       <div class="page-header__breadcrumb" style="margin-bottom:1.5rem;">
-        <a href="index.html">Home</a> <span>/</span> <span>Cart</span>
+        <a href="/">Home</a> <span>/</span> <span>Cart</span>
       </div>
       <h1 class="page-header__title reveal">Your Gift Cart</h1>
 
@@ -89,7 +90,7 @@
               '<div class="cart-empty__icon">🌱</div>' +
               '<h2>Your cart is empty</h2>' +
               '<p>Looks like you haven\'t added any plant gifts yet. Let\'s fix that!</p>' +
-              '<a href="shop.html" class="btn btn--primary">Browse Plant Gifts</a>' +
+              '<a href="/shop" class="btn btn--primary">Browse Plant Gifts</a>' +
             '</div>';
           return;
         }
@@ -102,7 +103,7 @@
 
         var checkoutBtnHTML = hasOutOfStock
           ? '<button class="btn btn--primary cart-summary__checkout-btn" disabled style="background:#999;cursor:not-allowed;opacity:0.7;">Remove out-of-stock items to continue</button>'
-          : '<a href="checkout.html" class="btn btn--primary cart-summary__checkout-btn">Proceed to Checkout</a>';
+          : '<a href="/checkout" class="btn btn--primary cart-summary__checkout-btn">Proceed to Checkout</a>';
 
         container.innerHTML =
           '<div class="cart-items reveal">' +
@@ -120,12 +121,13 @@
                     '<span class="qty-display">' + item.qty + '</span>' +
                     '<button class="qty-btn" data-qty-action="plus" data-product-id="' + item.id + '">+</button>' +
                   '</div>';
+              var itemHref = DreamGreenComponents.productHref(item.product);
               return '<div class="cart-item" data-cart-item="' + item.id + '"' + (itemOOS ? ' style="background:#fff8f7;border:1px solid #f5c6cb;"' : '') + '>' +
-                '<a href="product.html?id=' + item.id + '" class="cart-item__image">' +
+                '<a href="' + itemHref + '" class="cart-item__image">' +
                   '<img src="' + item.product.image + '" alt="' + item.product.name + '" width="100" height="100"' + (itemOOS ? ' style="filter:grayscale(0.6);"' : '') + '>' +
                 '</a>' +
                 '<div class="cart-item__details">' +
-                  '<a href="product.html?id=' + item.id + '" class="cart-item__name">' + item.product.name + '</a>' +
+                  '<a href="' + itemHref + '" class="cart-item__name">' + item.product.name + '</a>' +
                   '<div class="cart-item__meta">' + item.product.size + ' · ' + item.product.potType + '</div>' +
                   '<div class="cart-item__price">' + DreamGreenComponents.formatPrice(item.product.price) + '</div>' +
                   (itemOOS ? '<div style="color:#c0392b;font-size:0.8rem;font-weight:600;margin-top:0.35rem;">🚫 Out of stock — please remove</div>' : '') +
@@ -148,7 +150,7 @@
             '<div class="cart-summary__divider"></div>' +
             '<div class="cart-summary__row cart-summary__total"><span>Total</span><span>' + DreamGreenComponents.formatPrice(totalPrice + deliveryFee) + '</span></div>' +
             checkoutBtnHTML +
-            '<a href="shop.html" class="cart-summary__continue">← Continue Shopping</a>' +
+            '<a href="/shop" class="cart-summary__continue">← Continue Shopping</a>' +
             '<div class="cart-summary__badges">' +
               '<div>🔒 Secure Checkout</div>' +
               '<div>🚚 Same-day Delivery in Surat</div>' +

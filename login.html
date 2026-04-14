@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login / Sign Up — Dream Green | Surat, Gujarat</title>
   <meta name="description" content="Access your Dream Green account to manage your plant gift orders and track delivery status. Secure login for our Surat community.">
-  <link rel="canonical" href="https://dreamgreen.shop/login.html">
+  <link rel="canonical" href="https://dreamgreen.shop/login">
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://dreamgreen.shop/login.html">
+  <meta property="og:url" content="https://dreamgreen.shop/login">
   <meta property="og:title" content="Login / Sign Up — Dream Green | Surat, Gujarat">
   <meta property="og:description" content="Access your Dream Green account to manage your plant gift orders.">
   <meta property="og:image" content="https://dreamgreen.shop/assets/images/og-login.png">
@@ -17,7 +17,7 @@
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:url" content="https://dreamgreen.shop/login.html">
+  <meta name="twitter:url" content="https://dreamgreen.shop/login">
   <meta name="twitter:title" content="Login / Sign Up — Dream Green | Surat, Gujarat">
   <meta name="twitter:description" content="Access your Dream Green account to manage your plant gift orders.">
   <meta name="twitter:image" content="https://dreamgreen.shop/assets/images/og-login.png">
@@ -178,7 +178,7 @@
       });
 
       function handlePostAuth() {
-        var redirect = new URLSearchParams(window.location.search).get('redirect') || 'account.html';
+        var redirect = new URLSearchParams(window.location.search).get('redirect') || '/account';
         window.location.href = redirect;
       }
     });

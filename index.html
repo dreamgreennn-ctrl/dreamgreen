@@ -70,7 +70,7 @@
           "@type": "SearchAction",
           "target": {
             "@type": "EntryPoint",
-            "urlTemplate": "https://dreamgreen.shop/shop.html?q={search_term_string}"
+            "urlTemplate": "https://dreamgreen.shop/shop?q={search_term_string}"
           },
           "query-input": "required name=search_term_string"
         },
@@ -131,8 +131,8 @@
           <h1 class="hero__title reveal">Give the Gift<br>of <em>Green</em></h1>
           <p class="hero__subtitle reveal">Plants that grow, memories that last. Curated plant gifts for every moment — birthdays, anniversaries, housewarmings, and just because. Same-day delivery across Surat.</p>
           <div class="hero__buttons reveal">
-            <a href="shop.html" class="btn btn--primary">🌿 Shop Plant Gifts</a>
-            <a href="shop.html" class="btn btn--outline">✉️ Send a Custom Gift</a>
+            <a href="/shop" class="btn btn--primary">🌿 Shop Plant Gifts</a>
+            <a href="/shop" class="btn btn--outline">✉️ Send a Custom Gift</a>
           </div>
         </div>
         <div class="hero__image reveal-right">
@@ -225,7 +225,7 @@
           <h2 class="section-title">Most Loved Gifts</h2>
           <p class="section-subtitle">Handpicked by our team and loved by thousands.</p>
         </div>
-        <a href="shop.html" class="bestsellers__view-all">View All →</a>
+        <a href="/shop" class="bestsellers__view-all">View All →</a>
       </div>
       <div class="bestsellers__scroll-wrapper">
         <button class="bestsellers__arrow bestsellers__arrow--left" id="scrollLeft" aria-label="Scroll left">←</button>
@@ -252,7 +252,7 @@
             <li><span>💌</span> A printed photo card</li>
             <li><span>🎶</span> A QR code music message</li>
           </ul>
-          <a href="shop.html" class="btn btn--primary">Customize Your Gift →</a>
+          <a href="/shop" class="btn btn--primary">Customize Your Gift →</a>
         </div>
         <div class="personalization__image reveal-right">
           <img src="assets/images/gift-personalization.png" alt="Gift box with personalized card" loading="lazy" width="480" height="480">
@@ -320,7 +320,7 @@
         <h2 class="about-snippet__title">Rooted in Love</h2>
         <p class="about-snippet__text">Dream Green was born in Surat from a simple belief — that plants are the most living, breathing gift you can give someone. We're a small team of plant lovers who obsess over quality, packaging, and the little details that turn a plant into a memory.</p>
         <p class="about-snippet__text">Every order is packed with care. Every leaf chosen with love.</p>
-        <a href="about.html" class="btn btn--white">Our Story →</a>
+        <a href="/about" class="btn btn--white">Our Story →</a>
       </div>
     </div>
   </section>
@@ -381,7 +381,7 @@
               collectionsGrid.innerHTML = DreamGreenData.collections.map(function (col) {
                 var linkId = col.id || col.firebaseId;
                 return '<div class="collection-card reveal" onclick="DreamGreenComponents.navigateToCollection(\'' + linkId + '\')">' +
-                  '<a href="collection.html?id=' + linkId + '" class="collection-card__link-wrap" onclick="event.preventDefault();">' +
+                  '<a href="/collection/' + encodeURIComponent(linkId) + '" class="collection-card__link-wrap" onclick="event.preventDefault();">' +
                     '<img class="collection-card__image" src="' + col.image + '" alt="' + col.name + '" loading="lazy" width="400" height="400">' +
                     '<div class="collection-card__overlay">' +
                       '<div class="collection-card__emoji">' + col.emoji + '</div>' +
@@ -424,7 +424,7 @@
             var blogGrid = document.getElementById('blogGrid');
             if (blogGrid) {
               blogGrid.innerHTML = DreamGreenData.blogPosts.map(function (post) {
-                return '<a href="blog.html?post=' + post.slug + '" class="blog-card reveal">' +
+                return '<a href="/blog/' + encodeURIComponent(post.slug) + '" class="blog-card reveal">' +
                   '<div class="blog-card__image-wrap"><img src="' + post.image + '" alt="' + post.title + '" loading="lazy" width="400" height="250"></div>' +
                   '<div class="blog-card__content">' +
                     '<div class="blog-card__tag">' + post.tag + '</div>' +

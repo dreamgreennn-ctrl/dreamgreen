@@ -15,30 +15,30 @@ var DreamGreenComponents = (function () {
 
     var user = typeof firebase !== 'undefined' ? firebase.auth().currentUser : null;
     var authLink = user 
-      ? '<a href="account.html" class="navbar__icon-btn" aria-label="Account">' +
+      ? '<a href="/account" class="navbar__icon-btn" aria-label="Account">' +
           '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' +
         '</a>'
-      : '<a href="login.html" class="navbar__link" style="font-size:0.85rem; font-weight:600;">Login</a>';
+      : '<a href="/login" class="navbar__link" style="font-size:0.85rem; font-weight:600;">Login</a>';
 
     var html = '<nav class="navbar reveal-down" id="navbar">' +
       '<div class="container navbar__inner">' +
-        '<a href="index.html" class="navbar__logo">' +
+        '<a href="/" class="navbar__logo">' +
           '<img src="assets/images/logo.png" alt="Dream Green Logo" class="navbar__logo-img">' +
           '<span class="navbar__logo-text">' + storeName + '</span>' +
         '</a>' +
         '<div class="navbar__links">' +
-          '<a href="shop.html">Shop</a>' +
-          '<a href="index.html#collections">Collections</a>' +
-          '<a href="index.html#how-it-works">How It Works</a>' +
-          '<a href="blog.html">Blog</a>' +
+          '<a href="/shop">Shop</a>' +
+          '<a href="/#collections">Collections</a>' +
+          '<a href="/#how-it-works">How It Works</a>' +
+          '<a href="/blog">Blog</a>' +
         '</div>' +
         '<div class="navbar__actions">' +
           authLink +
-          '<a href="cart.html" class="navbar__icon-btn" aria-label="Cart">' +
+          '<a href="/cart" class="navbar__icon-btn" aria-label="Cart">' +
             '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>' +
             '<span class="navbar__cart-count" id="navCartCount">' + count + '</span>' +
           '</a>' +
-          '<a href="shop.html" class="btn btn--primary btn--small navbar__cta">Send a Gift</a>' +
+          '<a href="/shop" class="btn btn--primary btn--small navbar__cta">Send a Gift</a>' +
           '<button class="navbar__hamburger" id="hamburgerBtn" aria-label="Menu">' +
             '<span></span><span></span><span></span>' +
           '</button>' +
@@ -46,13 +46,13 @@ var DreamGreenComponents = (function () {
       '</div>' +
     '</nav>' +
     '<div class="mobile-nav" id="mobileNav">' +
-      '<a href="shop.html" data-mobile-link>Shop</a>' +
-      '<a href="index.html#collections" data-mobile-link>Gift Collections</a>' +
-      '<a href="index.html#how-it-works" data-mobile-link>How It Works</a>' +
-      '<a href="about.html" data-mobile-link>About Us</a>' +
-      '<a href="blog.html" data-mobile-link>Blog</a>' +
-      (user ? '<a href="account.html" data-mobile-link>My Account</a>' : '<a href="login.html" data-mobile-link>Login</a>') +
-      '<a href="cart.html" class="btn btn--primary" data-mobile-link>View Cart (' + count + ')</a>' +
+      '<a href="/shop" data-mobile-link>Shop</a>' +
+      '<a href="/#collections" data-mobile-link>Gift Collections</a>' +
+      '<a href="/#how-it-works" data-mobile-link>How It Works</a>' +
+      '<a href="/about" data-mobile-link>About Us</a>' +
+      '<a href="/blog" data-mobile-link>Blog</a>' +
+      (user ? '<a href="/account" data-mobile-link>My Account</a>' : '<a href="/login" data-mobile-link>Login</a>') +
+      '<a href="/cart" class="btn btn--primary" data-mobile-link>View Cart (' + count + ')</a>' +
     '</div>';
     return html;
   }
@@ -74,7 +74,7 @@ var DreamGreenComponents = (function () {
       '<div class="container">' +
         '<div class="footer__grid">' +
           '<div>' +
-            '<a href="index.html" class="footer__logo">' +
+            '<a href="/" class="footer__logo">' +
               '<img src="assets/images/logo.png" alt="Logo" class="footer__logo-img">' +
               ' ' + storeName +
             '</a>' +
@@ -88,21 +88,21 @@ var DreamGreenComponents = (function () {
           '<div>' +
             '<h4 class="footer__heading">Shop</h4>' +
             '<ul class="footer__links">' +
-              '<li><a href="shop.html">All Plants</a></li>' +
+              '<li><a href="/shop">All Plants</a></li>' +
               (DreamGreenData.collections || []).slice(0, 5).map(function (c) {
                 var linkId = c.id || c.firebaseId;
-                return '<li><a href="collection.html?id=' + linkId + '" onclick="DreamGreenComponents.navigateToCollection(\'' + linkId + '\')">' + c.name + '</a></li>';
+                return '<li><a href="/collection/' + encodeURIComponent(linkId) + '">' + c.name + '</a></li>';
               }).join('') +
             '</ul>' +
           '</div>' +
           '<div>' +
             '<h4 class="footer__heading">Help</h4>' +
             '<ul class="footer__links">' +
-              '<li><a href="index.html#how-it-works">How It Works</a></li>' +
-              '<li><a href="about.html#delivery">Delivery & Shipping</a></li>' +
-              '<li><a href="blog.html?post=beginner-indoor-plant-care">Care Instructions</a></li>' +
-              '<li><a href="about.html#delivery">Returns & Refunds</a></li>' +
-              '<li><a href="about.html#faq">FAQs</a></li>' +
+              '<li><a href="/#how-it-works">How It Works</a></li>' +
+              '<li><a href="/about#delivery">Delivery & Shipping</a></li>' +
+              '<li><a href="/blog/beginner-indoor-plant-care">Care Instructions</a></li>' +
+              '<li><a href="/about#delivery">Returns & Refunds</a></li>' +
+              '<li><a href="/about#faq">FAQs</a></li>' +
             '</ul>' +
           '</div>' +
           '<div>' +
@@ -116,8 +116,8 @@ var DreamGreenComponents = (function () {
         '<div class="footer__bottom">' +
           '<span class="footer__copyright">© 2025 ' + storeName + '. All rights reserved.</span>' +
           '<div class="footer__legal">' +
-            '<a href="about.html">Privacy Policy</a>' +
-            '<a href="about.html">Terms of Service</a>' +
+            '<a href="/about">Privacy Policy</a>' +
+            '<a href="/about">Terms of Service</a>' +
           '</div>' +
         '</div>' +
       '</div>' +
@@ -298,12 +298,22 @@ var DreamGreenComponents = (function () {
     '</div>';
   }
 
+  function productHref(product) {
+    if (!product) return '/shop';
+    var slug = product.slug || product.id || product.firebaseId;
+    return '/product/' + encodeURIComponent(slug);
+  }
+
+  function collectionHref(id) {
+    if (!id) return '/shop';
+    return '/collection/' + encodeURIComponent(id);
+  }
+
   function navigateToProduct(id) {
     if (!id) return;
-    try {
-      sessionStorage.setItem('last_viewed_product_id', id.toString());
-    } catch(e) {}
-    window.location.href = 'product.html?id=' + id;
+    try { sessionStorage.setItem('last_viewed_product_id', id.toString()); } catch(e) {}
+    var product = (typeof DreamGreenData !== 'undefined') ? DreamGreenData.getProduct(id) : null;
+    window.location.href = product ? productHref(product) : ('/product/' + encodeURIComponent(id));
   }
 
   function initAddToCartButtons() {
@@ -351,11 +361,11 @@ var DreamGreenComponents = (function () {
     navigateToProduct: navigateToProduct,
     navigateToCollection: function (id) {
       if (!id) return;
-      try {
-        sessionStorage.setItem('last_viewed_collection_id', id.toString());
-      } catch(e) {}
-      window.location.href = 'collection.html?id=' + id;
+      try { sessionStorage.setItem('last_viewed_collection_id', id.toString()); } catch(e) {}
+      window.location.href = collectionHref(id);
     },
+    productHref: productHref,
+    collectionHref: collectionHref,
 
     /** Initialize page — call this on every page after DOM loads */
     initPage: function (options) {

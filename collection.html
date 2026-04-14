@@ -5,14 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Plant Gift Collections — Dream Green | Surat, Gujarat</title>
   <meta name="description" content="Explore our curated plant gift collections. From birthdays to housewarmings, find the perfect green gift for every occasion in Surat.">
-  <link rel="canonical" href="https://dreamgreen.shop/collection.html" id="dgCanonical">
+  <link rel="canonical" href="https://dreamgreen.shop/shop" id="dgCanonical">
   <script>
     (function () {
-      var params = new URLSearchParams(window.location.search);
-      var id = params.get('id');
+      var pathMatch = window.location.pathname.match(/^\/collection\/([^\/\?#]+)/);
+      var pathSlug = pathMatch ? decodeURIComponent(pathMatch[1]) : null;
+      var querySlug = new URLSearchParams(window.location.search).get('id');
+      var slug = pathSlug || querySlug;
       var canon = document.getElementById('dgCanonical');
-      if (id && canon) {
-        canon.setAttribute('href', 'https://dreamgreen.shop/collection.html?id=' + encodeURIComponent(id));
+      if (slug) {
+        window.__dgCollectionSlug = slug;
+        if (canon) canon.setAttribute('href', 'https://dreamgreen.shop/collection/' + encodeURIComponent(slug));
       } else {
         var m = document.createElement('meta');
         m.name = 'robots';
@@ -24,7 +27,7 @@
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://dreamgreen.shop/collection.html">
+  <meta property="og:url" content="https://dreamgreen.shop/shop">
   <meta property="og:title" content="Plant Gift Collections — Dream Green | Surat, Gujarat">
   <meta property="og:description" content="Explore our curated plant gift collections for every special occasion.">
   <meta property="og:image" content="https://dreamgreen.shop/assets/images/og-collections.png">
@@ -32,7 +35,7 @@
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:url" content="https://dreamgreen.shop/collection.html">
+  <meta name="twitter:url" content="https://dreamgreen.shop/shop">
   <meta name="twitter:title" content="Plant Gift Collections — Dream Green | Surat, Gujarat">
   <meta name="twitter:description" content="Explore our curated plant gift collections for every special occasion.">
   <meta name="twitter:image" content="https://dreamgreen.shop/assets/images/og-collections.png">
@@ -49,7 +52,7 @@
   <section class="page-header" id="collectionHeader">
     <div class="container">
       <div class="page-header__breadcrumb">
-        <a href="index.html">Home</a> <span>/</span> <a href="shop.html">Shop</a> <span>/</span> <span id="breadcrumbName">Collection</span>
+        <a href="/">Home</a> <span>/</span> <a href="/shop">Shop</a> <span>/</span> <span id="breadcrumbName">Collection</span>
       </div>
       <h1 class="page-header__title reveal" id="collectionTitle">Collection</h1>
       <p class="page-header__subtitle reveal" id="collectionDesc"></p>
@@ -60,7 +63,7 @@
     <div class="container">
       <div class="shop__grid" id="collectionGrid"></div>
       <div class="text-center" style="margin-top:3rem;">
-        <a href="shop.html" class="btn btn--outline">← Browse All Plants</a>
+        <a href="/shop" class="btn btn--outline">← Browse All Plants</a>
       </div>
     </div>
   </section>
@@ -84,12 +87,10 @@
       DreamGreenData.init(function() {
         DreamGreenComponents.initPage({
           onReady: function () {
-            var params = new URLSearchParams(window.location.search);
-            var collectionIdSource = params.get('id');
+            var collectionIdSource = window.__dgCollectionSlug ||
+              new URLSearchParams(window.location.search).get('id');
             if (!collectionIdSource) {
-              try {
-                collectionIdSource = sessionStorage.getItem('last_viewed_collection_id');
-              } catch(e) {}
+              try { collectionIdSource = sessionStorage.getItem('last_viewed_collection_id'); } catch(e) {}
             }
             var collection = DreamGreenData.getCollection(collectionIdSource);
 
@@ -101,7 +102,7 @@
                 '<div class="shop__empty"><h2>Collection Not Found</h2>' + 
                 '<p>The link was looking for: <strong>' + (collectionIdSource || 'None') + '</strong></p>' +
                 '<p style="margin-top:1rem;"><strong>Available IDs in Database:</strong><br>' + (allIds || 'Nothing found in collections array') + '</p>' +
-                '<p style="margin-top:1rem;"><a href="shop.html" class="btn btn--primary">Browse All Plants</a></p></div>';
+                '<p style="margin-top:1rem;"><a href="/shop" class="btn btn--primary">Browse All Plants</a></p></div>';
               return;
             }
 
@@ -115,7 +116,7 @@
               ? products.map(function (p) { return DreamGreenComponents.renderProductCard(p); }).join('')
               : '<div class="shop__empty"><h3>No products found in this collection.</h3>' +
                 '<p>ID: ' + collection.id + ' | Firebase ID: ' + (collection.firebaseId || 'None') + '</p>' +
-                '<p><a href="shop.html" class="btn btn--outline">Browse All Plants →</a></p></div>';
+                '<p><a href="/shop" class="btn btn--outline">Browse All Plants →</a></p></div>';
           }
         });
       });

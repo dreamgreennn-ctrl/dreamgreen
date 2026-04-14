@@ -5,22 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dream Green Journal — Plant Care & Gifting Tips | Surat</title>
   <meta name="description" content="Explore the Dream Green journal. Discover plant care tips, unique gifting ideas, and green inspiration for your home in Surat, Gujarat.">
-  <link rel="canonical" href="https://dreamgreen.shop/blog.html" id="dgCanonical">
+  <link rel="canonical" href="https://dreamgreen.shop/blog" id="dgCanonical">
   <script>
-    // Give each blog post a unique canonical so ?post= variants aren't folded into the listing.
+    // Give each blog post a unique canonical. Read slug from /blog/:slug or ?post=.
     (function () {
-      var params = new URLSearchParams(window.location.search);
-      var post = params.get('post');
+      var pathMatch = window.location.pathname.match(/^\/blog\/([^\/\?#]+)/);
+      var pathSlug = pathMatch ? decodeURIComponent(pathMatch[1]) : null;
+      var querySlug = new URLSearchParams(window.location.search).get('post');
+      var slug = pathSlug || querySlug;
       var canon = document.getElementById('dgCanonical');
-      if (post && canon) {
-        canon.setAttribute('href', 'https://dreamgreen.shop/blog.html?post=' + encodeURIComponent(post));
+      if (slug) {
+        window.__dgBlogSlug = slug;
+        if (canon) canon.setAttribute('href', 'https://dreamgreen.shop/blog/' + encodeURIComponent(slug));
       }
     })();
   </script>
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://dreamgreen.shop/blog.html">
+  <meta property="og:url" content="https://dreamgreen.shop/blog">
   <meta property="og:title" content="Dream Green Journal — Plant Care & Gifting Tips | Surat">
   <meta property="og:description" content="Discover plant care tips, unique gifting ideas, and green inspiration from the Dream Green journal.">
   <meta property="og:image" content="https://dreamgreen.shop/assets/images/og-blog.png">
@@ -28,7 +31,7 @@
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:url" content="https://dreamgreen.shop/blog.html">
+  <meta name="twitter:url" content="https://dreamgreen.shop/blog">
   <meta name="twitter:title" content="Dream Green Journal — Plant Care & Gifting Tips | Surat">
   <meta name="twitter:description" content="Discover plant care tips, unique gifting ideas, and green inspiration from the Dream Green journal.">
   <meta name="twitter:image" content="https://dreamgreen.shop/assets/images/og-blog.png">
@@ -48,7 +51,7 @@
       <!-- Listing View -->
       <div id="blogListing">
         <div class="page-header__breadcrumb" style="margin-bottom:1.5rem;">
-          <a href="index.html">Home</a> <span>/</span> <span>Blog</span>
+          <a href="/">Home</a> <span>/</span> <span>Blog</span>
         </div>
         <h1 class="page-header__title reveal">From the Dream Green Journal</h1>
         <p class="page-header__subtitle reveal" style="margin-bottom:3rem;">Plant care tips, gifting ideas, and green inspiration.</p>
@@ -58,7 +61,7 @@
       <!-- Article View (hidden by default) -->
       <div id="blogArticle" style="display:none;">
         <div class="page-header__breadcrumb" style="margin-bottom:1.5rem;">
-          <a href="index.html">Home</a> <span>/</span> <a href="blog.html">Blog</a> <span>/</span> <span id="articleBreadcrumb">Article</span>
+          <a href="/">Home</a> <span>/</span> <a href="/blog">Blog</a> <span>/</span> <span id="articleBreadcrumb">Article</span>
         </div>
         <article class="blog-article">
           <div class="blog-article__header reveal">
@@ -73,9 +76,9 @@
           <div class="blog-article__cta reveal">
             <h3>Ready to send a plant gift?</h3>
             <p>Browse our curated collection and surprise someone special in Surat today.</p>
-            <a href="shop.html" class="btn btn--primary">Shop Plant Gifts →</a>
+            <a href="/shop" class="btn btn--primary">Shop Plant Gifts →</a>
           </div>
-          <a href="blog.html" class="blog-article__back">← Back to all articles</a>
+          <a href="/blog" class="blog-article__back">← Back to all articles</a>
         </article>
       </div>
     </div>
@@ -100,14 +103,14 @@
       DreamGreenData.init(function() {
         DreamGreenComponents.initPage({
           onReady: function () {
-            var params = new URLSearchParams(window.location.search);
-            var postSlug = params.get('post');
+            var postSlug = window.__dgBlogSlug ||
+              new URLSearchParams(window.location.search).get('post');
 
             if (postSlug) {
               // Show article view
               var post = DreamGreenData.getBlogPostBySlug(postSlug);
               if (!post) {
-                document.getElementById('blogListing').innerHTML = '<div class="shop__empty"><h2>Article not found</h2><a href="blog.html" class="btn btn--primary">View all articles</a></div>';
+                document.getElementById('blogListing').innerHTML = '<div class="shop__empty"><h2>Article not found</h2><a href="/blog" class="btn btn--primary">View all articles</a></div>';
                 return;
               }
 
@@ -127,7 +130,7 @@
               // Show listing
               var grid = document.getElementById('blogGrid');
               grid.innerHTML = DreamGreenData.blogPosts.map(function (post) {
-                return '<a href="blog.html?post=' + post.slug + '" class="blog-card reveal">' +
+                return '<a href="/blog/' + post.slug + '" class="blog-card reveal">' +
                   '<div class="blog-card__image-wrap"><img src="' + post.image + '" alt="' + post.title + '" loading="lazy" width="400" height="250"></div>' +
                   '<div class="blog-card__content">' +
                     '<div class="blog-card__tag">' + post.tag + '</div>' +

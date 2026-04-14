@@ -1,12 +1,17 @@
 User-agent: *
 Allow: /
+Disallow: /cart
+Disallow: /checkout
+Disallow: /account
+Disallow: /login
+Disallow: /admin
 Disallow: /cart.html
 Disallow: /checkout.html
 Disallow: /account.html
 Disallow: /login.html
 Disallow: /admin.html
 
-# Let all image and asset crawlers through
+# Let all image crawlers through
 User-agent: Googlebot-Image
 Allow: /assets/
 

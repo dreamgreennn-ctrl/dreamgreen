@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Checkout — Dream Green | Surat, Gujarat</title>
   <meta name="description" content="Complete your plant gift order securely. Safe delivery across Surat, Gujarat. Pay on delivery via Cash or UPI.">
-  <link rel="canonical" href="https://dreamgreen.shop/checkout.html">
+  <link rel="canonical" href="https://dreamgreen.shop/checkout">
+  <meta name="robots" content="noindex, follow">
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://dreamgreen.shop/checkout.html">
+  <meta property="og:url" content="https://dreamgreen.shop/checkout">
   <meta property="og:title" content="Checkout — Dream Green | Surat, Gujarat">
   <meta property="og:description" content="Complete your plant gift order securely. Safe delivery across Surat.">
   <meta property="og:image" content="https://dreamgreen.shop/assets/images/og-checkout.png">
@@ -17,7 +18,7 @@
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:url" content="https://dreamgreen.shop/checkout.html">
+  <meta name="twitter:url" content="https://dreamgreen.shop/checkout">
   <meta name="twitter:title" content="Checkout — Dream Green | Surat, Gujarat">
   <meta name="twitter:description" content="Complete your plant gift order securely. Safe delivery across Surat.">
   <meta name="twitter:image" content="https://dreamgreen.shop/assets/images/og-checkout.png">
@@ -34,7 +35,7 @@
   <section class="checkout-page section" style="padding-top:calc(var(--nav-height) + 2rem);">
     <div class="container">
       <div class="page-header__breadcrumb" style="margin-bottom:1.5rem;">
-        <a href="index.html">Home</a> <span>/</span> <a href="cart.html">Cart</a> <span>/</span> <span>Checkout</span>
+        <a href="/">Home</a> <span>/</span> <a href="/cart">Cart</a> <span>/</span> <span>Checkout</span>
       </div>
       <h1 class="page-header__title reveal">Complete Your Gift</h1>
       
@@ -113,8 +114,8 @@
         <h2 class="section-title">Order Placed Successfully!</h2>
         <p class="section-subtitle">Thank you for choosing Dream Green. Your gift will be delivered as scheduled.</p>
         <div style="margin-top:2.5rem; display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
-          <a href="index.html" class="btn btn--primary">Back to Home</a>
-          <a href="shop.html" class="btn btn--outline">Continue Gifting</a>
+          <a href="/" class="btn btn--primary">Back to Home</a>
+          <a href="/shop" class="btn btn--outline">Continue Gifting</a>
         </div>
       </div>
     </div>
@@ -140,7 +141,7 @@
           onReady: function () {
             var items = DreamGreenCart.getCartDetails();
             if (items.length === 0) {
-              window.location.href = 'cart.html';
+              window.location.href = '/cart';
               return;
             }
             // Block checkout if any cart item is out of stock
@@ -149,7 +150,7 @@
               alert('Some items in your cart are out of stock:\n\n' +
                 oosItems.map(function (i) { return '• ' + i.product.name; }).join('\n') +
                 '\n\nPlease remove them before checking out.');
-              window.location.href = 'cart.html';
+              window.location.href = '/cart';
               return;
             }
             renderCheckoutSummary();
@@ -180,7 +181,7 @@
                 alert('One or more items went out of stock:\n\n' +
                   oosAtSubmit.map(function (i) { return '• ' + i.product.name; }).join('\n') +
                   '\n\nReturning you to your cart.');
-                window.location.href = 'cart.html';
+                window.location.href = '/cart';
                 return;
               }
               var totalPrice = DreamGreenCart.getTotalPrice();
