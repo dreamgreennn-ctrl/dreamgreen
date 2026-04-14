@@ -36,9 +36,15 @@ var DreamGreenCart = (function () {
       return getCart();
     },
 
-    /** Add item or increment qty */
+    /** Add item or increment qty. Returns false if product is out of stock. */
     addItem: function (productId, qty) {
       qty = qty || 1;
+      if (typeof DreamGreenData !== 'undefined' && typeof DreamGreenData.getProduct === 'function') {
+        var product = DreamGreenData.getProduct(productId);
+        if (product && product.inStock === false) {
+          return false;
+        }
+      }
       var cart = getCart();
       var searchId = productId.toString();
       var existing = cart.find(function (item) { return item.id.toString() === searchId; });
@@ -48,6 +54,7 @@ var DreamGreenCart = (function () {
         cart.push({ id: productId, qty: qty });
       }
       saveCart(cart);
+      return true;
     },
 
     /** Remove item completely */
@@ -131,6 +138,19 @@ var DreamGreenCart = (function () {
     hasItem: function (productId) {
       var searchId = productId.toString();
       return getCart().some(function (item) { return item.id.toString() === searchId; });
+    },
+
+    /** Return cart details for items whose product is currently out of stock. */
+    getOutOfStockItems: function () {
+      var cart = getCart();
+      var result = [];
+      cart.forEach(function (item) {
+        var product = DreamGreenData.getProduct(item.id);
+        if (product && product.inStock === false) {
+          result.push({ id: item.id, qty: item.qty, product: product });
+        }
+      });
+      return result;
     }
   };
 })();

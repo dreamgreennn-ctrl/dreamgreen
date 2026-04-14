@@ -143,6 +143,15 @@
               window.location.href = 'cart.html';
               return;
             }
+            // Block checkout if any cart item is out of stock
+            var oosItems = items.filter(function (i) { return i.product.inStock === false; });
+            if (oosItems.length > 0) {
+              alert('Some items in your cart are out of stock:\n\n' +
+                oosItems.map(function (i) { return '• ' + i.product.name; }).join('\n') +
+                '\n\nPlease remove them before checking out.');
+              window.location.href = 'cart.html';
+              return;
+            }
             renderCheckoutSummary();
             
             // Set min date to today for delivery
@@ -166,6 +175,14 @@
               btn.textContent = 'Processing...';
 
               var items = DreamGreenCart.getCartDetails();
+              var oosAtSubmit = items.filter(function (i) { return i.product.inStock === false; });
+              if (oosAtSubmit.length > 0) {
+                alert('One or more items went out of stock:\n\n' +
+                  oosAtSubmit.map(function (i) { return '• ' + i.product.name; }).join('\n') +
+                  '\n\nReturning you to your cart.');
+                window.location.href = 'cart.html';
+                return;
+              }
               var totalPrice = DreamGreenCart.getTotalPrice();
               var deliveryFee = totalPrice >= 499 ? 0 : 49;
               

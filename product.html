@@ -96,12 +96,31 @@
             document.getElementById('breadcrumbName').textContent = product.name;
 
             var savings = product.originalPrice ? product.originalPrice - product.price : 0;
+            var outOfStock = product.inStock === false;
+
+            var soldOutBanner = outOfStock
+              ? '<div class="product-detail__sold-out" style="background:#fdecea;color:#c0392b;border:1px solid #c0392b;border-radius:8px;padding:0.9rem 1rem;margin:1rem 0;font-weight:600;display:flex;align-items:center;gap:0.6rem;">🚫 This plant is currently <strong>out of stock</strong>. Please check back soon.</div>'
+              : '';
+
+            var qtyRowHTML = outOfStock
+              ? '<div class="product-detail__qty-row">' +
+                  '<button class="btn btn--primary product-detail__add-btn" id="addToCartBtn" disabled style="background:#999;cursor:not-allowed;opacity:0.7;">Out of Stock</button>' +
+                '</div>'
+              : '<div class="product-detail__qty-row">' +
+                  '<div class="qty-selector">' +
+                    '<button class="qty-btn" id="qtyMinus">−</button>' +
+                    '<input type="number" class="qty-input" id="qtyInput" value="1" min="1" max="10">' +
+                    '<button class="qty-btn" id="qtyPlus">+</button>' +
+                  '</div>' +
+                  '<button class="btn btn--primary product-detail__add-btn" id="addToCartBtn">🌿 Add to Gift — ' + DreamGreenComponents.formatPrice(product.price) + '</button>' +
+                '</div>';
 
             document.getElementById('productContent').innerHTML =
               '<div class="product-detail__image reveal-left">' +
-                '<div class="product-detail__image-main">' +
+                '<div class="product-detail__image-main"' + (outOfStock ? ' style="filter:grayscale(0.5);"' : '') + '>' +
                   '<img src="' + product.image + '" alt="' + product.name + '" width="500" height="500">' +
-                  (product.tag ? '<div class="product-detail__badge">' + product.tag + '</div>' : '') +
+                  (product.tag && !outOfStock ? '<div class="product-detail__badge">' + product.tag + '</div>' : '') +
+                  (outOfStock ? '<div class="product-detail__badge" style="background:#c0392b;">Out of Stock</div>' : '') +
                 '</div>' +
               '</div>' +
               '<div class="product-detail__info reveal-right">' +
@@ -113,22 +132,16 @@
                 '<div class="product-detail__price-row">' +
                   '<span class="product-detail__price">' + DreamGreenComponents.formatPrice(product.price) + '</span>' +
                   (product.originalPrice ? '<span class="product-detail__original-price">' + DreamGreenComponents.formatPrice(product.originalPrice) + '</span>' : '') +
-                  (savings > 0 ? '<span class="product-detail__savings">Save ' + DreamGreenComponents.formatPrice(savings) + '</span>' : '') +
+                  (savings > 0 && !outOfStock ? '<span class="product-detail__savings">Save ' + DreamGreenComponents.formatPrice(savings) + '</span>' : '') +
                 '</div>' +
+                soldOutBanner +
                 '<p class="product-detail__desc">' + product.description + '</p>' +
                 '<div class="product-detail__meta">' +
                   '<div class="product-detail__meta-item"><strong>Size:</strong> ' + product.size + '</div>' +
                   '<div class="product-detail__meta-item"><strong>Pot:</strong> ' + product.potType + '</div>' +
                   '<div class="product-detail__meta-item"><strong>Delivery:</strong> Same-day in Surat, Gujarat</div>' +
                 '</div>' +
-                '<div class="product-detail__qty-row">' +
-                  '<div class="qty-selector">' +
-                    '<button class="qty-btn" id="qtyMinus">−</button>' +
-                    '<input type="number" class="qty-input" id="qtyInput" value="1" min="1" max="10">' +
-                    '<button class="qty-btn" id="qtyPlus">+</button>' +
-                  '</div>' +
-                  '<button class="btn btn--primary product-detail__add-btn" id="addToCartBtn">🌿 Add to Gift — ' + DreamGreenComponents.formatPrice(product.price) + '</button>' +
-                '</div>' +
+                qtyRowHTML +
                 '<div class="product-detail__trust">' +
                   '<div>🎁 Gift-wrapped in our signature box</div>' +
                   '<div>🚚 Same-day delivery in Surat</div>' +
@@ -149,43 +162,52 @@
 
             DreamGreenComponents.initScrollReveals();
 
-            // Qty controls
-            var qtyInput = document.getElementById('qtyInput');
-            document.getElementById('qtyMinus').addEventListener('click', function () {
-              var val = parseInt(qtyInput.value);
-              if (val > 1) qtyInput.value = val - 1;
-              updateBtnPrice();
-            });
-            document.getElementById('qtyPlus').addEventListener('click', function () {
-              var val = parseInt(qtyInput.value);
-              if (val < 10) qtyInput.value = val + 1;
-              updateBtnPrice();
-            });
-            qtyInput.addEventListener('change', function () {
-              var val = parseInt(this.value);
-              if (isNaN(val) || val < 1) this.value = 1;
-              if (val > 10) this.value = 10;
-              updateBtnPrice();
-            });
-
-            function updateBtnPrice() {
-              var btn = document.getElementById('addToCartBtn');
-              var total = product.price * parseInt(qtyInput.value);
-              btn.textContent = '🌿 Add to Gift — ' + DreamGreenComponents.formatPrice(total);
-            }
-
-            // Add to cart
-            document.getElementById('addToCartBtn').addEventListener('click', function () {
-              var qty = parseInt(qtyInput.value);
-              DreamGreenCart.addItem(product.id, qty);
-              this.textContent = '✓ Added to Cart!';
-              this.style.backgroundColor = '#6e8e69';
-              var self = this;
-              setTimeout(function () {
-                self.style.backgroundColor = '';
+            if (!outOfStock) {
+              // Qty controls
+              var qtyInput = document.getElementById('qtyInput');
+              document.getElementById('qtyMinus').addEventListener('click', function () {
+                var val = parseInt(qtyInput.value);
+                if (val > 1) qtyInput.value = val - 1;
                 updateBtnPrice();
-              }, 2000);
-            });
+              });
+              document.getElementById('qtyPlus').addEventListener('click', function () {
+                var val = parseInt(qtyInput.value);
+                if (val < 10) qtyInput.value = val + 1;
+                updateBtnPrice();
+              });
+              qtyInput.addEventListener('change', function () {
+                var val = parseInt(this.value);
+                if (isNaN(val) || val < 1) this.value = 1;
+                if (val > 10) this.value = 10;
+                updateBtnPrice();
+              });
+
+              function updateBtnPrice() {
+                var btn = document.getElementById('addToCartBtn');
+                var total = product.price * parseInt(qtyInput.value);
+                btn.textContent = '🌿 Add to Gift — ' + DreamGreenComponents.formatPrice(total);
+              }
+
+              // Add to cart
+              document.getElementById('addToCartBtn').addEventListener('click', function () {
+                // Re-check stock at click time in case data refreshed
+                var fresh = DreamGreenData.getProduct(product.id);
+                if (fresh && fresh.inStock === false) {
+                  alert('Sorry, this plant just went out of stock.');
+                  window.location.reload();
+                  return;
+                }
+                var qty = parseInt(qtyInput.value);
+                DreamGreenCart.addItem(product.id, qty);
+                this.textContent = '✓ Added to Cart!';
+                this.style.backgroundColor = '#6e8e69';
+                var self = this;
+                setTimeout(function () {
+                  self.style.backgroundColor = '';
+                  updateBtnPrice();
+                }, 2000);
+              });
+            }
 
             // Related products
             var related = DreamGreenData.products.filter(function (p) { return p.id !== product.id; }).slice(0, 4);

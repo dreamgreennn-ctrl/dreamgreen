@@ -254,24 +254,37 @@ var DreamGreenComponents = (function () {
     var originalPrice = product.originalPrice || 0;
     var hasDiscount = originalPrice > price;
     var discountAmount = hasDiscount ? originalPrice - price : 0;
+    var outOfStock = product.inStock === false;
 
     var priceHTML = '<span class="product-card__price">' + formatPrice(price) + '</span>';
     if (hasDiscount) {
       priceHTML += '<span class="product-card__original-price">' + formatPrice(originalPrice) + '</span>';
     }
 
-    var discountBadge = hasDiscount 
-      ? '<div class="product-card__discount-badge">SAVE ' + formatPrice(discountAmount) + '</div>' 
+    var discountBadge = hasDiscount && !outOfStock
+      ? '<div class="product-card__discount-badge">SAVE ' + formatPrice(discountAmount) + '</div>'
+      : '';
+
+    var soldOutBadge = outOfStock
+      ? '<div class="product-card__sold-out-badge" style="position:absolute;top:12px;left:12px;background:#c0392b;color:#fff;font-size:0.7rem;font-weight:700;letter-spacing:0.05em;padding:0.3rem 0.6rem;border-radius:4px;text-transform:uppercase;z-index:2;">Out of Stock</div>'
       : '';
 
     var linkId = product.id || product.firebaseId || product.slug;
     var metaInfo = (product.size || 'Standard') + ' | ' + (product.potType || 'Nursery Pot');
 
-    return '<div class="product-card" data-product-id="' + linkId + '" onclick="DreamGreenComponents.navigateToProduct(\'' + linkId + '\')">' +
+    var addBtnHTML = outOfStock
+      ? '<button type="button" class="product-card__add-btn" aria-label="Out of Stock" disabled style="background:#999;cursor:not-allowed;opacity:0.7;">Sold Out</button>'
+      : '<button type="button" class="product-card__add-btn" aria-label="Add to Cart" data-add-to-cart="' + linkId + '">Add</button>';
+
+    var cardStyle = outOfStock ? ' style="opacity:0.85;"' : '';
+    var imgStyle = outOfStock ? ' style="filter:grayscale(0.6);"' : '';
+
+    return '<div class="product-card' + (outOfStock ? ' product-card--out-of-stock' : '') + '" data-product-id="' + linkId + '" onclick="DreamGreenComponents.navigateToProduct(\'' + linkId + '\')"' + cardStyle + '>' +
       '<div class="product-card__image-wrap">' +
-        '<img src="' + (product.image || 'assets/images/placeholder.png') + '" alt="' + (product.name || 'Plant') + '" loading="lazy" width="280" height="280">' +
-        (product.tag ? '<span class="product-card__tag">' + product.tag + '</span>' : '') +
+        '<img src="' + (product.image || 'assets/images/placeholder.png') + '" alt="' + (product.name || 'Plant') + '" loading="lazy" width="280" height="280"' + imgStyle + '>' +
+        (product.tag && !outOfStock ? '<span class="product-card__tag">' + product.tag + '</span>' : '') +
         discountBadge +
+        soldOutBadge +
       '</div>' +
       '<div class="product-card__info">' +
         '<div class="product-card__meta">' + metaInfo + '</div>' +
@@ -279,7 +292,7 @@ var DreamGreenComponents = (function () {
         '<div class="product-card__rating">' + renderStars(product.rating || 5) + ' <span>(' + (product.reviews || 0) + ' reviews)</span></div>' +
         '<div class="product-card__bottom">' +
           '<div class="product-card__price-group">' + priceHTML + '</div>' +
-          '<button type="button" class="product-card__add-btn" aria-label="Add to Cart" data-add-to-cart="' + linkId + '">Add</button>' +
+          addBtnHTML +
         '</div>' +
       '</div>' +
     '</div>';
@@ -303,6 +316,12 @@ var DreamGreenComponents = (function () {
 
       var productId = btn.getAttribute('data-add-to-cart');
       if (!productId) return;
+
+      var product = DreamGreenData.getProduct(productId);
+      if (product && product.inStock === false) {
+        alert('Sorry, "' + product.name + '" is currently out of stock.');
+        return;
+      }
 
       DreamGreenCart.addItem(productId, 1);
 

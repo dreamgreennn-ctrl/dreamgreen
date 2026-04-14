@@ -98,6 +98,11 @@
         var totalSavings = DreamGreenCart.getTotalSavings();
         var totalItems = DreamGreenCart.getTotalItems();
         var deliveryFee = totalPrice >= 499 ? 0 : 49;
+        var hasOutOfStock = items.some(function (i) { return i.product.inStock === false; });
+
+        var checkoutBtnHTML = hasOutOfStock
+          ? '<button class="btn btn--primary cart-summary__checkout-btn" disabled style="background:#999;cursor:not-allowed;opacity:0.7;">Remove out-of-stock items to continue</button>'
+          : '<a href="checkout.html" class="btn btn--primary cart-summary__checkout-btn">Proceed to Checkout</a>';
 
         container.innerHTML =
           '<div class="cart-items reveal">' +
@@ -105,23 +110,29 @@
               '<span>' + totalItems + ' item' + (totalItems !== 1 ? 's' : '') + ' in your cart</span>' +
               '<button class="cart-clear-btn" id="clearCartBtn">Clear All</button>' +
             '</div>' +
+            (hasOutOfStock ? '<div style="background:#fdecea;color:#c0392b;border:1px solid #c0392b;border-radius:8px;padding:0.8rem 1rem;margin-bottom:1rem;font-weight:500;">⚠️ Some items in your cart are currently out of stock. Please remove them to continue checkout.</div>' : '') +
             items.map(function (item) {
-              return '<div class="cart-item" data-cart-item="' + item.id + '">' +
+              var itemOOS = item.product.inStock === false;
+              var qtyControl = itemOOS
+                ? '<div class="qty-selector" style="opacity:0.5;"><span class="qty-display" style="padding:0 0.75rem;color:#c0392b;font-weight:600;">Unavailable</span></div>'
+                : '<div class="qty-selector">' +
+                    '<button class="qty-btn" data-qty-action="minus" data-product-id="' + item.id + '">−</button>' +
+                    '<span class="qty-display">' + item.qty + '</span>' +
+                    '<button class="qty-btn" data-qty-action="plus" data-product-id="' + item.id + '">+</button>' +
+                  '</div>';
+              return '<div class="cart-item" data-cart-item="' + item.id + '"' + (itemOOS ? ' style="background:#fff8f7;border:1px solid #f5c6cb;"' : '') + '>' +
                 '<a href="product.html?id=' + item.id + '" class="cart-item__image">' +
-                  '<img src="' + item.product.image + '" alt="' + item.product.name + '" width="100" height="100">' +
+                  '<img src="' + item.product.image + '" alt="' + item.product.name + '" width="100" height="100"' + (itemOOS ? ' style="filter:grayscale(0.6);"' : '') + '>' +
                 '</a>' +
                 '<div class="cart-item__details">' +
                   '<a href="product.html?id=' + item.id + '" class="cart-item__name">' + item.product.name + '</a>' +
                   '<div class="cart-item__meta">' + item.product.size + ' · ' + item.product.potType + '</div>' +
                   '<div class="cart-item__price">' + DreamGreenComponents.formatPrice(item.product.price) + '</div>' +
+                  (itemOOS ? '<div style="color:#c0392b;font-size:0.8rem;font-weight:600;margin-top:0.35rem;">🚫 Out of stock — please remove</div>' : '') +
                 '</div>' +
                 '<div class="cart-item__controls">' +
-                  '<div class="qty-selector">' +
-                    '<button class="qty-btn" data-qty-action="minus" data-product-id="' + item.id + '">−</button>' +
-                    '<span class="qty-display">' + item.qty + '</span>' +
-                    '<button class="qty-btn" data-qty-action="plus" data-product-id="' + item.id + '">+</button>' +
-                  '</div>' +
-                  '<div class="cart-item__subtotal">' + DreamGreenComponents.formatPrice(item.subtotal) + '</div>' +
+                  qtyControl +
+                  '<div class="cart-item__subtotal"' + (itemOOS ? ' style="text-decoration:line-through;color:#999;"' : '') + '>' + DreamGreenComponents.formatPrice(item.subtotal) + '</div>' +
                   '<button class="cart-item__remove" data-remove-item="' + item.id + '" title="Remove">✕</button>' +
                 '</div>' +
               '</div>';
@@ -136,7 +147,7 @@
             (deliveryFee > 0 ? '<div class="cart-summary__hint">Add ' + DreamGreenComponents.formatPrice(499 - totalPrice) + ' more for free delivery</div>' : '') +
             '<div class="cart-summary__divider"></div>' +
             '<div class="cart-summary__row cart-summary__total"><span>Total</span><span>' + DreamGreenComponents.formatPrice(totalPrice + deliveryFee) + '</span></div>' +
-            '<a href="checkout.html" class="btn btn--primary cart-summary__checkout-btn">Proceed to Checkout</a>' +
+            checkoutBtnHTML +
             '<a href="shop.html" class="cart-summary__continue">← Continue Shopping</a>' +
             '<div class="cart-summary__badges">' +
               '<div>🔒 Secure Checkout</div>' +
