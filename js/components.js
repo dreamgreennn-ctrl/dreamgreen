@@ -301,19 +301,19 @@ var DreamGreenComponents = (function () {
   function productHref(product) {
     if (!product) return '/shop';
     var slug = product.slug || product.id || product.firebaseId;
-    return '/product/' + encodeURIComponent(slug);
+    return '/product?id=' + encodeURIComponent(slug);
   }
 
   function collectionHref(id) {
     if (!id) return '/shop';
-    return '/collection/' + encodeURIComponent(id);
+    return '/collection?id=' + encodeURIComponent(id);
   }
 
   function navigateToProduct(id) {
     if (!id) return;
     try { sessionStorage.setItem('last_viewed_product_id', id.toString()); } catch(e) {}
     var product = (typeof DreamGreenData !== 'undefined') ? DreamGreenData.getProduct(id) : null;
-    window.location.href = product ? productHref(product) : ('/product/' + encodeURIComponent(id));
+    window.location.href = product ? productHref(product) : ('/product?id=' + encodeURIComponent(id));
   }
 
   function initAddToCartButtons() {

@@ -16,7 +16,7 @@
       var canon = document.getElementById('dgCanonical');
       if (slug) {
         window.__dgProductSlug = slug;
-        if (canon) canon.setAttribute('href', 'https://dreamgreen.shop/product/' + encodeURIComponent(slug));
+        if (canon) canon.setAttribute('href', 'https://dreamgreen.shop/product?id=' + encodeURIComponent(slug));
       } else {
         var m = document.createElement('meta');
         m.name = 'robots';
@@ -111,7 +111,7 @@
 
             // Inject Product + Breadcrumb JSON-LD for Google rich results
             try {
-              var productUrl = 'https://dreamgreen.shop/product/' + (product.slug || product.id || product.firebaseId);
+              var productUrl = 'https://dreamgreen.shop/product?id=' + encodeURIComponent(product.slug || product.id || product.firebaseId);
               var imageUrl = (product.image && product.image.indexOf('http') === 0)
                 ? product.image
                 : 'https://dreamgreen.shop/' + (product.image || 'assets/images/logo.png').replace(/^\//, '');

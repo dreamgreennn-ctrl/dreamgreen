@@ -15,7 +15,7 @@
       var canon = document.getElementById('dgCanonical');
       if (slug) {
         window.__dgCollectionSlug = slug;
-        if (canon) canon.setAttribute('href', 'https://dreamgreen.shop/collection/' + encodeURIComponent(slug));
+        if (canon) canon.setAttribute('href', 'https://dreamgreen.shop/collection?id=' + encodeURIComponent(slug));
       } else {
         var m = document.createElement('meta');
         m.name = 'robots';
